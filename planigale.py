@@ -10,18 +10,6 @@ def get_url(url):
 	page = json.loads(data)
 	return page
 
-
-# url = 'http://eol.org/api/pages/1.0/1045608.json?images=2&videos=0&sounds=0&maps=0&text=2&iucn=false&subjects=overview&licenses=all&details=true&common_names=true&synonyms=true&references=true&vetted=0&cache_ttl='
-
-
-# images_list = [objects.get('mediaURL') for objects in page['dataObjects'] 
-# 				if objects.get('mediaURL') is not None]
-
-# scientific_name = page['scientific_name']
-
-# common_name = [name['vernacularName'] for name in page['vernacularNames'] 
-# 				if name['language'] == 'en' and name.get('eol_preferred') == True][0]
-
 search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=50&filter=&sort_by=richness&sort_field=&cache_ttl='
 
 top500 = get(search_url)
@@ -39,6 +27,20 @@ class Species(object):
 		response = urlopen(random.choice(self.images_list))
 		img = Image.open(BytesIO(response.read()))
 		img.show()
+
+    @classmethod
+    def from_eolid(cls, eolid):
+    	url = 'http://eol.org/api/pages/1.0/{}.json?images=2&videos=0&sounds=0&maps=0&text=2&iucn=false&subjects=overview&licenses=all&details=true&common_names=true&synonyms=true&references=true&vetted=0&cache_ttl='.format(eolid)
+
+		images_list = [objects.get('mediaURL') for objects in page['dataObjects'] 
+						if objects.get('mediaURL') is not None]
+
+		scientific_name = page['scientific_name']
+
+		common_name = [name['vernacularName'] for name in page['vernacularNames'] 
+						if name['language'] == 'en' and name.get('eol_preferred') == True][0]
+
+		return cls(scientific_name, common_name, images_list)
 
 	def __repr__(self):
 		return "{c} ({s})".format(c=common_name, s=scientific_name)
