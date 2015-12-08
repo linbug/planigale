@@ -12,7 +12,8 @@ Many cute! Much fun!
 
 - Python 3
 - the following (non built-in) library:
-  pillow (install using pip)
+
+  `pillow` (install using pip)
 
 ##Usage
 
