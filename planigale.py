@@ -27,6 +27,8 @@ class Question(object):
             return
         self.correct = (guess_species == self.answer)
 
+        return self.correct
+
 class Game(object):
     def __init__(self, data, total_questions):
         self.score = 0
@@ -38,7 +40,7 @@ class Game(object):
         for question in self.questions:
             display_question(question)
             get_guess(question)
-            input()
+            input("Press enter to continue to the next question!")
         display_final()
 
     def display_question(self, question):
@@ -50,29 +52,29 @@ class Game(object):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-
-            guess = input("What species is in this picture? Enter a choice between 1 and "{}.format(self.total_questions))
+            guess = input("What species is in this picture? Enter a choice between 1 and {}".format(self.total_questions))
             while True:
                 try:
-                    guess = question.species[int(guess)-1]
+                    guess_species = question.species[int(guess)-1]
                     break
                 except (NameError, TypeError, SyntaxError, IndexError) :
-                    guess = input("Not a valid choice! Enter a choice between 1 and "{}.format(self.total_questions))
-            guess = int(guess)
+                    guess = input("Not a valid choice! Enter a choice between 1 and {}".format(self.total_questions))
+            if question.verify(guess_species):
+                self.score += 1
+                print("You guessed correctly! Your score is {}.".format(self.score))
+            else:
+                print("You guessed incorrectly! The correct answer was {}.".format(question.answer))
 
+    def display_final_score(self):
+        print("You got {} out of {} questions correct!".format(self.score, self.total_questions))
 
-
-
-
-
-
-
-
-
-
-
-
-
+        print("\nLet's review the questions and answers!")
+        for question_num, question in enumerate(self.questions,start=1):
+            print("\n\nQuestion {}.".format(question_num))
+            for species_num, species in enumerate(question.species,start=1):
+                print("{}. {}".format(species_num, species))
+            print("\nAnswer was {}.".format(question.answer))
+            print("\n")
 
 class Species(object):
     '''Creates a new species object that stores scientific name, common name and images\
@@ -109,15 +111,15 @@ class Species(object):
     def __repr__(self):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
 
+if __name__ = '__main__':
+    #search url for the eol 'hotlist' collection, first 500 pages sorted by richness
+    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=50&filter=&sort_by=richness&sort_field=&cache_ttl='
 
-#search url for the eol 'hotlist' collection, first 500 pages sorted by richness
-search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=500&filter=&sort_by=richness&sort_field=&cache_ttl='
+    #ping the API to get the json data for these pages
+    top500 = get_url(search_url)
 
-#ping the API to get the json data for these pages
-top500 = get_url(search_url)
+    #create a species list that contains the object ID for each species in the top500
+    species_ID_list = [item['object_id'] for item in top500['collection_items']]
 
-#create a species list that contains the object ID for each species in the top500
-species_ID_list = [item['object_id'] for item in top500['collection_items']]
-
-#create a list of 3 random species IDs
-random_list = random.sample(species_ID_list,3)
+    #create a list of 3 random species IDs
+    random_list = random.sample(species_ID_list,3)
