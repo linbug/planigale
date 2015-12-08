@@ -3,6 +3,7 @@ from io import BytesIO
 import json
 import random
 from PIL import Image
+import os
 
 def get_url(url):
     '''get json page data using a specified eol API url'''
@@ -21,7 +22,7 @@ class Question(object):
         self.correct = None
 
     def verify(self, guess_species):
-        if guess == None:
+        if self.guess == None:
             self.guess = guess_species
         else:
             return
@@ -37,11 +38,12 @@ class Game(object):
         self.questions = [Question(data) for i in range(self.total_questions)]
 
     def play(self):
+        os.system('clear')
         for question in self.questions:
-            display_question(question)
-            get_guess(question)
+            self.display_question(question)
+            self.get_guess(question)
             input("Press enter to continue to the next question!")
-        display_final()
+        self.display_final_score()
 
     def display_question(self, question):
         response = urlopen(question.picture)
@@ -52,7 +54,7 @@ class Game(object):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-            guess = input("What species is in this picture? Enter a choice between 1 and {}".format(self.total_questions))
+            guess = input("What species is in this picture? Enter a choice between 1 and {}: ".format(self.total_questions))
             while True:
                 try:
                     guess_species = question.species[int(guess)-1]
@@ -111,9 +113,9 @@ class Species(object):
     def __repr__(self):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     #search url for the eol 'hotlist' collection, first 500 pages sorted by richness
-    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=50&filter=&sort_by=richness&sort_field=&cache_ttl='
+    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=10&filter=&sort_by=richness&sort_field=&cache_ttl='
 
     #ping the API to get the json data for these pages
     top500 = get_url(search_url)
@@ -121,5 +123,8 @@ if __name__ = '__main__':
     #create a species list that contains the object ID for each species in the top500
     species_ID_list = [item['object_id'] for item in top500['collection_items']]
 
-    #create a list of 3 random species IDs
-    random_list = random.sample(species_ID_list,3)
+    data = [Species.from_eolid(ID) for ID in species_ID_list]
+
+    new_game = Game(data,3)
+
+    new_game.play()
