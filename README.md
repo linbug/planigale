@@ -17,4 +17,4 @@ Many cute! Much fun!
 ##Usage
 
 - clone this repo to your computer
-- cd to the planigale directory in the terminal and run python planigale.py
+- `cd` to the planigale directory in the terminal and run `python planigale.py`
