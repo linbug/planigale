@@ -20,22 +20,47 @@ class Question(object):
         self.guess = None
         self.correct = None
 
-    def make_guess(self, guess_species):
+    def verify(self, guess_species):
         if guess == None:
             self.guess = guess_species
         else:
             return
+        self.correct = (guess_species == self.answer)
 
-        if guess_species == self.answer:
-            self.correct = True
-        else:
-            self.correct = False
+class Game(object):
+    def __init__(self, data, total_questions):
+        self.score = 0
+        self.question_number = 0
+        self.total_questions = total_questions
+        self.questions = [Question(data) for i in range(self.total_questions)]
 
-        
+    def play(self):
+        for question in self.questions:
+            display_question(question)
+            get_guess(question)
+            input()
+        display_final()
+
+    def display_question(self, question):
+        response = urlopen(question.picture)
+        img = Image.open(BytesIO(response.read()))
+        img.show()
+
+        for choice_num, species in enumerate(question.species, start = 1):
+            print("{}. {}".format(choice_num, species.scientific_name))
+
+    def get_guess(self, question):
+        input()
 
 
 
-    
+
+
+
+
+
+
+
 class Species(object):
     '''Creates a new species object that stores scientific name, common name and images\
     from an eol page '''
