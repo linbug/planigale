@@ -21,7 +21,7 @@ def load_data(pickle_file='species.pickle'):
         data = fetch_data()
     return data
 
-def fetch_data(pickle_file='species.pickle', num_species=10):
+def fetch_data(pickle_file='species.pickle', num_species=20):
     search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
 
     #ping the API to get the json data for these pages
