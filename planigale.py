@@ -88,7 +88,7 @@ class Game(object):
                     guess_species = question.species[int(guess)-1]
                     break
                 except (Exception) :
-                    guess = input("Not a valid choice! Enter a choice between 1 and {}".format(self.total_questions))
+                    guess = input("Not a valid choice! Enter a choice between 1 and {}: ".format(self.total_questions))
             if question.verify(guess_species):
                 self.score += 1
                 print("You guessed correctly! Your score is {}.".format(self.score))
