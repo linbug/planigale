@@ -11,6 +11,31 @@ def get_url(url):
     page = json.loads(data)
     return page
 
+
+class Question(object):
+    def __init__(self, data):
+        self.species = random.sample(data,3)
+        self.answer = random.choice(self.species)
+        self.picture = random.choice(self.answer.images_list)
+        self.guess = None
+        self.correct = None
+
+    def make_guess(self, guess_species):
+        if guess == None:
+            self.guess = guess_species
+        else:
+            return
+
+        if guess_species == self.answer:
+            self.correct = True
+        else:
+            self.correct = False
+
+        
+
+
+
+    
 class Species(object):
     '''Creates a new species object that stores scientific name, common name and images\
     from an eol page '''
