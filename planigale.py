@@ -30,7 +30,7 @@ class Question(object):
 class Game(object):
     def __init__(self, data, total_questions):
         self.score = 0
-        self.question_number = 0
+        self.question_number = 1
         self.total_questions = total_questions
         self.questions = [Question(data) for i in range(self.total_questions)]
 
@@ -50,7 +50,20 @@ class Game(object):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-        input()
+
+            guess = input("What species is in this picture? Enter a choice between 1 and "{}.format(self.total_questions))
+            while True:
+                try:
+                    guess = question.species[int(guess)-1]
+                    break
+                except (NameError, TypeError, SyntaxError, IndexError) :
+                    guess = input("Not a valid choice! Enter a choice between 1 and "{}.format(self.total_questions))
+            guess = int(guess)
+
+
+
+
+
 
 
 
@@ -95,6 +108,7 @@ class Species(object):
 
     def __repr__(self):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
+
 
 #search url for the eol 'hotlist' collection, first 500 pages sorted by richness
 search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=500&filter=&sort_by=richness&sort_field=&cache_ttl='
