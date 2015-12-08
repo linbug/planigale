@@ -1,5 +1,6 @@
 # planigale
-A squishy command-line quiz based on the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind. Match the picture to the species!
+A squishy command-line quiz based on the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind. 
+Test your knowledge by matching the picture to the species!
 
 Many cute! Much fun!
 
@@ -9,10 +10,11 @@ Many cute! Much fun!
 
 ##Dependencies
 
--Python 3
--the following (nonbuilt-in) library:
- pillow (install using pip)
+- Python 3
+- the following (non built-in) library:
+  pillow (install using pip)
 
 ##Usage
+
 - clone this repo to your computer
 - cd to the planigrade directory in the terminal and run python planigrade.py
