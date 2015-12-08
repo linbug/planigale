@@ -4,6 +4,7 @@ import json
 import random
 from PIL import Image
 import os
+import pickle
 
 def get_url(url):
     '''get json page data using a specified eol API url'''
@@ -12,6 +13,29 @@ def get_url(url):
     page = json.loads(data)
     return page
 
+def load_data(pickle_file='species.pickle'):
+    try:
+        with open(pickle_file, 'rb') as f:
+            data = pickle.load(f)
+    except (Exception):
+        data = fetch_data()
+    return data
+
+def fetch_data(pickle_file='species.pickle', num_species=10):
+    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
+
+    #ping the API to get the json data for these pages
+    results = get_url(search_url)
+
+    #create a species list that contains the object ID for each species in the top500
+    species_ID_list = [item['object_id'] for item in results['collection_items']]
+
+    data = [Species.from_eolid(ID) for ID in species_ID_list]
+
+    with open(pickle_file, 'wb') as f:
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+
+    return data
 
 class Question(object):
     def __init__(self, data):
@@ -38,11 +62,15 @@ class Game(object):
         self.questions = [Question(data) for i in range(self.total_questions)]
 
     def play(self):
-        os.system('clear')
-        for question in self.questions:
+        for question_num, question in enumerate(self.questions, start=1):
+            os.system('clear')
+            print("\nQuestion {}.".format(question_num))
             self.display_question(question)
             self.get_guess(question)
-            input("Press enter to continue to the next question!")
+            if (question_num == self.total_questions):
+                input("Press enter to see your summary!")
+            else:
+                input("Press enter to continue to the next question!")
         self.display_final_score()
 
     def display_question(self, question):
@@ -68,6 +96,7 @@ class Game(object):
                 print("You guessed incorrectly! The correct answer was {}.".format(question.answer))
 
     def display_final_score(self):
+        os.system('clear')
         print("You got {} out of {} questions correct!".format(self.score, self.total_questions))
 
         print("\nLet's review the questions and answers!")
@@ -76,7 +105,6 @@ class Game(object):
             for species_num, species in enumerate(question.species,start=1):
                 print("{}. {}".format(species_num, species))
             print("\nAnswer was {}.".format(question.answer))
-            print("\n")
 
 class Species(object):
     '''Creates a new species object that stores scientific name, common name and images\
@@ -114,16 +142,7 @@ class Species(object):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
 
 if __name__ == '__main__':
-    #search url for the eol 'hotlist' collection, first 500 pages sorted by richness
-    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page=10&filter=&sort_by=richness&sort_field=&cache_ttl='
-
-    #ping the API to get the json data for these pages
-    top500 = get_url(search_url)
-
-    #create a species list that contains the object ID for each species in the top500
-    species_ID_list = [item['object_id'] for item in top500['collection_items']]
-
-    data = [Species.from_eolid(ID) for ID in species_ID_list]
+    data = load_data()
 
     new_game = Game(data,3)
 
