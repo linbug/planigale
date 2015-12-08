@@ -87,7 +87,7 @@ class Game(object):
                 try:
                     guess_species = question.species[int(guess)-1]
                     break
-                except (NameError, TypeError, SyntaxError, IndexError) :
+                except (Exception) :
                     guess = input("Not a valid choice! Enter a choice between 1 and {}".format(self.total_questions))
             if question.verify(guess_species):
                 self.score += 1
