@@ -12,9 +12,10 @@ Many cute! Much fun!
 
 - Python 3
 - the following (non built-in) library:
-  pillow (install using pip)
+
+  `pillow` (install using pip)
 
 ##Usage
 
 - clone this repo to your computer
-- cd to the planigrade directory in the terminal and run python planigrade.py
+- `cd` to the planigale directory in the terminal and run `python planigale.py`
