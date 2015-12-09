@@ -21,7 +21,7 @@ def load_data(pickle_file='species.pickle'):
         data = fetch_data()
     return data
 
-def fetch_data(pickle_file='species.pickle', num_species=10):
+def fetch_data(pickle_file='species.pickle', num_species=500):
     search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
 
     #ping the API to get the json data for these pages
@@ -64,13 +64,13 @@ class Game(object):
     def play(self):
         for question_num, question in enumerate(self.questions, start=1):
             os.system('clear')
-            print("\nQuestion {}.".format(question_num))
+            print("Question {}.".format(question_num))
             self.display_question(question)
             self.get_guess(question)
             if (question_num == self.total_questions):
-                input("Press enter to see your summary!")
+                input("\nPress enter to see your summary!")
             else:
-                input("Press enter to continue to the next question!")
+                input("\nPress enter to continue to the next question!")
         self.display_final_score()
 
     def display_question(self, question):
@@ -82,7 +82,7 @@ class Game(object):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-            guess = input("What species is in this picture? Enter a choice between 1 and {}: ".format(self.total_questions))
+            guess = input("\nWhat species is in this picture? Enter a choice between 1 and {}: ".format(self.total_questions))
             while True:
                 try:
                     guess_species = question.species[int(guess)-1]
@@ -91,7 +91,7 @@ class Game(object):
                     guess = input("Not a valid choice! Enter a choice between 1 and {}".format(self.total_questions))
             if question.verify(guess_species):
                 self.score += 1
-                print("You guessed correctly! Your score is {}.".format(self.score))
+                print("\nYou guessed correctly! Your score is {}.".format(self.score))
             else:
                 print("You guessed incorrectly! The correct answer was {}.".format(question.answer))
 
@@ -104,6 +104,8 @@ class Game(object):
             print("\n\nQuestion {}.".format(question_num))
             for species_num, species in enumerate(question.species,start=1):
                 print("{}. {}".format(species_num, species))
+            print("\nYour answer was {}, which was {}.".format(
+                question.guess, 'Correct' if question.correct else 'Incorrect'))
             print("\nAnswer was {}.".format(question.answer))
 
 class Species(object):
@@ -114,6 +116,7 @@ class Species(object):
         self.scientific_name = scientific_name
         self.common_name = common_name
         self.images_list = images_list
+        # print("Initialized species: {}".format(self))
 
     def show_image(self):
         response = urlopen(random.choice(self.images_list))
