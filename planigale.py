@@ -64,14 +64,25 @@ class Question(object):
 class PlanigaleGame(object):
     def __init__(self, data, total_questions=3, hints=0):
         self.score = 0
-        self.question_number = 1
-        self.total_questions = total_questions
         self.hints = 0
+        self.total_questions = total_questions
         self.questions = [Question(data) for i in range(self.total_questions)]
+        self.question_num = 1
+        self.curr_question = self.questions[0]
 
     def score_question(self, question, guess_species, hints=0):
         if question.verify(guess_species):
             self.score += 1
+
+    def next_question(self):
+        if self.question_num < self.total_questions:
+            self.question_num += 1
+            self.curr_question = self.questions[self.question_num]
+            return True
+        else:
+            return False
+
+    
 
 class PlanigaleConsole(object):
     def __init__(self, data, total_questions=3, hints=0):

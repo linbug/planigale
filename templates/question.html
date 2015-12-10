@@ -1,0 +1,44 @@
+
+
+<!DOCTYPE html>
+
+<head>
+
+<title>{{title}}</title>
+
+ <link rel="shortcut icon" href="happy.jpg">
+<link rel="stylesheet" href="static/style.css"/>
+<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body >
+
+<header>
+    <h1 >Planigale</h1>
+
+</header>
+
+<div class = blogroll>
+
+<img src = {{question.picture}}>
+
+<hr>
+<p> Question {{ question_number }} </p>
+<p> What species is in the picture? </p>
+
+<form  action="/answer" method="post">
+<input type="radio" name="choice" value="0" > {{question.species[0].scientific_name}} <br>
+<input type="radio" name="choice" value="1" > {{question.species[1].scientific_name}} <br>
+<input type="radio" name="choice" value="2" > {{question.species[2].scientific_name}} <br>
+<input type="submit" value="Submit">
+</form>
+
+<form action = "/next">
+<input type="submit" value="Next question">
+</form>
+
+</div>
+
+</script>
+</body>

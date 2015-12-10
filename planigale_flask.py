@@ -5,23 +5,66 @@ import os
 app = Flask(__name__)
 app.secret_key =  os.urandom(24)
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-def index():
 
-        if "current_game" not in session:
-            session["current_game"] = PlanigaleGame(data)
-            current_question = session["current_game"].questions[0]
-        #question = Question(data)
+def get_new_session():
+    curr_session += 1
 
-        if request.method == 'POST':
-            entered_answer = request.form["choice"]
-            print(entered_answer)
+def get_session_id_game():
+    if 'id' not in session:
+        session['id'] = get_new_session()
+        # forward to question for new game?
+    id = session['id']
 
-        return render_template('Game.html',
-                           question = current_question )
+    if id not in games:
+        games[id] = PlanigaleGame(data)
+        # forward to question for new game?
+    game = game[id]
+
+    return id, game
+
+def new_game():
+    pass
+
+@app.route('/question', methods=['GET'])
+def question():
+    id, game = get_session_id_game()
+    current_question = game.questions[game.question_number-1]
+
+    return render_template('question.html',
+                            question_num = game.question_num,
+                            question = current_question )
+
+
+@app.route('/answer', methods=['POST'])
+def answer():
+    id, game = get_session_id_game()
+    guess_species = game.curr_question.species[int(request.form["choice"])]
+
+    return render_template('answer.html',
+                            question_num = game.question_number,
+                            question = current_question)
+
+
+@app.route('/next', methods=['POST'])
+def next():
+    id, game = get_session_id_game()
+
+    if game.next_question():
+        pass
+        # forward to question page
+    else:
+        pass
+         # forward to summary page
+
+def summary():
+    id, game = get_session_id_game()
+
+    return render_template('summary.html',
+                           game = game)
 
 if __name__ == '__main__':
     data = Planigale.load_species()
+    curr_session = 0
+    games = {}
 
     app.run(debug = True)
