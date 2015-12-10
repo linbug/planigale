@@ -1,0 +1,120 @@
+   body {
+      text-align: left;
+      /*background-image: url("banner4.jpg");*/
+      background-position: left;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: -200px ;
+      background-attachment: fixed;
+      color: black;
+      margin:0 auto;
+    }
+
+     h1 {
+      font-family: 'Roboto', sans-serif; font-weight: 100;
+      font-size: 70px;
+      color: white;
+      text-align: center;
+      padding: 20px 10px 20px 10px;
+      margin: 50px 0px 0px 0px;
+    }
+
+    h1.test{
+    color: green;
+    }
+
+    h2{
+     font-family: 'Roboto', sans-serif; font-weight: 100;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      text-align: left;
+      padding: 0px 10px 10px 0px;
+      margin: 10px 0px 0px 0px;
+     }
+    hr{
+    align:left;
+    width:400;
+     }
+    a{
+    color: white;
+    }
+     a:link {
+    text-decoration: none;
+    }
+    header {
+    text-align: center;
+    /*background: -webkit-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));*/
+    background-color: rgba(0, 0, 0, 0.8);
+    background-size: cover;
+    color: white;
+    margin: 0;
+     }
+
+    aside {
+    position:fixed;
+    top: 200px;
+    right: 150px;
+    line-height: 28px;
+    }
+
+    form {
+    font-family: 'Roboto', sans-serif;
+
+    }
+       p {
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      line-height: 28px;
+      text-align:justify;
+    }
+    .blogroll{
+      max-width: 600px;
+      padding: 20px;
+      margin: 0 auto;
+    }
+
+     a{
+     font-family: 'Roboto', sans-serif;
+     color: white;
+    }
+     a:hover{
+    color:#5CCCCC;
+    }
+        img{
+    /*margin: 0px 0px 20px 0px;*/
+     }
+
+    li.external_links{
+    display: inline;
+    margin: 0px 20px 20px 0px;
+    padding:0;
+    font-size: 20px;
+    float: right;
+    /*background:#0000ff;*/
+    }
+
+    i:hover{
+    color:#5CCCCC;
+}
+
+   @media (max-width: 300px){
+
+     h1{
+      font-size: 36px;
+     }
+     h2{
+      font-size: 15px;
+     }
+     li{
+      display: block;
+      padding: 0px;
+     }
+     p{
+        font-size: 20px;
+        line-height: 24px;
+     }
+    div{
+  margin: auto;
+ }
+    }
