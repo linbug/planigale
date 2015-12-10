@@ -6,39 +6,43 @@ from PIL import Image
 import os
 import pickle
 
-def get_url(url):
-    '''get json page data using a specified eol API url'''
-    response = urlopen(url)
-    data = str(response.read().decode('utf-8'))
-    page = json.loads(data)
-    return page
+class Planigale(object):
+    @staticmethod
+    def get_url(url):
+        '''get json page data using a specified eol API url'''
+        response = urlopen(url)
+        data = str(response.read().decode('utf-8'))
+        page = json.loads(data)
+        return page
 
-def load_data(pickle_file='species.pickle'):
-    try:
-        with open(pickle_file, 'rb') as f:
-            data = pickle.load(f)
-    except (Exception):
-        data = fetch_data()
-    return data
+    @staticmethod
+    def load_species(pickle_file='species.pickle'):
+        try:
+            with open(pickle_file, 'rb') as f:
+                data = pickle.load(f)
+        except (Exception):
+            data = fetch_species()
+        return data
 
-def fetch_data(pickle_file='species.pickle', num_species=10):
-    search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
+    @staticmethod
+    def fetch_species(pickle_file='species.pickle', num_species=10):
+        search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
 
-    #ping the API to get the json data for these pages
-    results = get_url(search_url)
+        #ping the API to get the json data for these pages
+        results = get_url(search_url)
 
-    #create a species list that contains the object ID for each species in the top500
-    species_ID_list = [item['object_id'] for item in results['collection_items']]
+        #create a species list that contains the object ID for each species in the top500
+        species_ID_list = [item['object_id'] for item in results['collection_items']]
 
-    data = []
-    for ID in species_ID_list:
-        data.append(Species.from_eolid(ID))
-    data = filter(None, data)
+        species = []
+        for ID in species_ID_list:
+            species.append(Species.from_eolid(ID))
+        data = filter(None, data)
 
-    with open(pickle_file, 'wb') as f:
-        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        with open(pickle_file, 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
-    return data
+        return species
 
 class Question(object):
     def __init__(self, data):
@@ -57,26 +61,40 @@ class Question(object):
 
         return self.correct
 
-class Game(object):
-    def __init__(self, data, total_questions):
+class PlanigaleGame(object):
+    def __init__(self, data, total_questions=3, hints=0):
         self.score = 0
         self.question_number = 1
         self.total_questions = total_questions
+        self.hints = 0
         self.questions = [Question(data) for i in range(self.total_questions)]
 
-    def play(self):
-        for question_num, question in enumerate(self.questions, start=1):
-            os.system('clear')
-            print("Question {}.".format(question_num))
-            self.display_question(question)
-            self.get_guess(question)
-            if (question_num == self.total_questions):
-                input("\nPress enter to see your summary!")
-            else:
-                input("\nPress enter to continue to the next question!")
+    def score_question(self, question, guess_species, hints=0):
+        if question.verify(guess_species):
+            self.score += 1
+
+class PlanigaleConsole(object):
+    def __init__(self, data, total_questions=3, hints=0):
+        self.game = PlanigaleGame(data, total_questions=3, hints=0)
+        self.play(self.game)
+
+    def play(self, game):
+        for question_num, question in enumerate(self.game.questions, start=1):
+            self.display_question(question, question_num)
+            guess_species = self.get_guess(question)
+            self.check_guess(question, guess_species)
+            self.display_break(question_num)
         self.display_final_score()
 
-    def display_question(self, question):
+    def display_break(self, question_num):
+        if (question_num == self.game.total_questions):
+            input("\nPress enter to see your summary!")
+        else:
+            input("\nPress enter to continue to the next question!")
+
+    def display_question(self, question, question_num, hints=0):
+        os.system('clear')
+        print("Question {}.".format(question_num))
         try:
             response = urlopen(question.picture)
             img = Image.open(BytesIO(response.read()))
@@ -93,25 +111,29 @@ class Game(object):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-            guess = input("\nWhat species is in this picture? Enter a choice between 1 and {}: ".format(self.total_questions))
-            while True:
-                try:
-                    guess_species = question.species[int(guess)-1]
-                    break
-                except (Exception) :
-                    guess = input("Not a valid choice! Enter a choice between 1 and {}: ".format(self.total_questions))
-            if question.verify(guess_species):
-                self.score += 1
-                print("\nYou guessed correctly! Your score is {}.".format(self.score))
-            else:
-                print("You guessed incorrectly! The correct answer was {}.".format(question.answer))
+        #todo - entering 0 or negative numbers will break this..
+        guess = input("\nWhat species is in this picture? Enter a choice between 1 and {}: ".format(len(question.species)))
+        while True:
+            try:
+                guess_species = question.species[int(guess)-1]
+                break
+            except (Exception):
+                guess = input("Not a valid choice! Enter a choice between 1 and {}: ".format(len(question.species)))
+
+        return guess_species
+
+    def check_guess(self, question, guess_species, hints_used=0):
+        if self.game.score_question(question, guess_species, hints=hints_used):
+            print("\nYou guessed correctly! Your score is {}.".format(self.score))
+        else:
+            print("\nYou guessed incorrectly! The correct answer was {}.".format(question.answer))
 
     def display_final_score(self):
         os.system('clear')
-        print("You got {} out of {} questions correct!".format(self.score, self.total_questions))
+        print("You got {} out of {} questions correct!".format(self.game.score, self.game.total_questions))
 
         print("\nLet's review the questions and answers!")
-        for question_num, question in enumerate(self.questions,start=1):
+        for question_num, question in enumerate(self.game.questions,start=1):
             print("\n\nQuestion {}.".format(question_num))
             for species_num, species in enumerate(question.species,start=1):
                 print("{}. {}".format(species_num, species))
@@ -168,9 +190,5 @@ class Species(object):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
 
 if __name__ == '__main__':
-    data = load_data()
-
-    new_game = Game(data,3)
-    new_game.questions[0].picture = 'aksjdljslf'
-
-    new_game.play()
+    data = Planigale.load_species()
+    PlanigaleConsole(data)
