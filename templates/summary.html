@@ -27,9 +27,17 @@
 
 <img src = {{question.picture}}>
 
+<p> You guessed {{question.guess.scientific_name ~ ' (' ~  question.guess.common_name ~ ')'}}! </p>
+
+<p> The answer was {{question.answer.scientific_name ~ ' (' ~  question.answer.common_name ~ ')'}} </p>
+
 <ul>
+
 {% for species in question.species %}
-<li>{{species.scientific_name}} ({{ species.common_name }})
+
+<li>
+{{species.scientific_name ~ ' (' ~  species.common_name ~ ')'}}
+
 </li>
 {% endfor %}
 </ul>
