@@ -77,7 +77,7 @@ class PlanigaleGame(object):
     def next_question(self):
         if self.question_num < self.total_questions:
             self.question_num += 1
-            self.curr_question = self.questions[self.question_num]
+            self.curr_question = self.questions[self.question_num-1]
             return True
         else:
             return False

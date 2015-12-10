@@ -23,18 +23,18 @@
 <img src = {{question.picture}}>
 
 <hr>
-<p> {{validation}} </p>
+<p> {{validation}} The answer was {{ question.answer.scientific_name }}
+  ({{ question.answer.common_name }}).</p>
 
-<form  action="." method="post">
-<input type="radio" name="choice" value="0" > {{question.species[0].scientific_name}} <br>
-<input type="radio" name="choice" value="1" > {{question.species[1].scientific_name}}
-<br>
-<input type="radio" name="choice" value="2" > {{question.species[2].scientific_name}}
-<br>
-<input type="submit" value="Submit">
-</form>
+<p> Your choices were: </p>
 
-<form action = "/next">
+<ul>
+  <li>{{question.species[0].scientific_name}} ({{ question.species[0].common_name }}) </li>
+  <li>{{question.species[1].scientific_name}} ({{ question.species[1].common_name }}) </li>
+  <li>{{question.species[2].scientific_name}} ({{ question.species[2].common_name }}) </li>
+</ul>
+
+<form method="post" action = "/next">
 <input type="submit" value="Next question">
 </form>
 

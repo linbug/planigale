@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 
@@ -55,12 +55,11 @@ def next():
     id, game = get_session_id_game()
 
     if game.next_question():
-        pass
-        # forward to question page
+        return redirect(url_for('question'))
     else:
-        pass
-         # forward to summary page
+        return redirect(url_for('summary'))
 
+@app.route('/summary', methods=['GET'])
 def summary():
     id, game = get_session_id_game()
 
