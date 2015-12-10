@@ -2,19 +2,19 @@
 <!DOCTYPE html>
 
 <head>
-<script src="jquery-1.11.2.js"></script>
+
 <title>{{title}}</title>
- <link href="/normalize.css" rel="stylesheet">
+
  <link rel="shortcut icon" href="happy.jpg">
 <link rel="stylesheet" href="static/style.css"/>
 <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+
 </head>
 
 <body >
 
 <header>
-    <h1 >Planigale </h1>
+    <h1 >Planigale</h1>
 
 </header>
 
@@ -25,11 +25,11 @@
 <hr>
 <p> What species is in the picture? </p>
 
-<form>
-<input type="radio" name="choice" value="1" checked> {{question.species[0].scientific_name}} <br>
-<input type="radio" name="choice" value="2"> {{question.species[1].scientific_name}}
+<form  action="." method="post">
+<input type="radio" name="choice" value="1" > {{question.species[0].scientific_name}} <br>
+<input type="radio" name="choice" value="2" > {{question.species[1].scientific_name}}
 <br>
-<input type="radio" name="choice" value="3"> {{question.species[2].scientific_name}}
+<input type="radio" name="choice" value="3" > {{question.species[2].scientific_name}}
 <br>
 <input type="submit" value="Submit">
 </form>
