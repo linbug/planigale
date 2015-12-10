@@ -21,8 +21,7 @@ def load_data(pickle_file='species.pickle'):
         data = fetch_data()
     return data
 
-def fetch_data(pickle_file='species.pickle', num_species=500):
-
+def fetch_data(pickle_file='species.pickle', num_species=10):
     search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
 
     #ping the API to get the json data for these pages
@@ -31,7 +30,10 @@ def fetch_data(pickle_file='species.pickle', num_species=500):
     #create a species list that contains the object ID for each species in the top500
     species_ID_list = [item['object_id'] for item in results['collection_items']]
 
-    data = [Species.from_eolid(ID) for ID in species_ID_list]
+    data = []
+    for ID in species_ID_list:
+        data.append(Species.from_eolid(ID))
+    data = filter(None, data)
 
     with open(pickle_file, 'wb') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
@@ -75,9 +77,17 @@ class Game(object):
         self.display_final_score()
 
     def display_question(self, question):
-        response = urlopen(question.picture)
-        img = Image.open(BytesIO(response.read()))
-        img.show()
+        try:
+            response = urlopen(question.picture)
+            img = Image.open(BytesIO(response.read()))
+            img.show()
+        except(Exception):
+            question.picture = 'http://s7.postimg.org/dlar2hyfv/planigale_missing.jpg'
+            response = urlopen(question.picture)
+            img = Image.open(BytesIO(response.read()))
+            img.show()
+            question.answer = Species('Planigale maculata', 'Planigale', question.picture)
+            question.species = [question.answer] * 3
 
         for choice_num, species in enumerate(question.species, start = 1):
             print("{}. {}".format(choice_num, species.scientific_name))
@@ -132,15 +142,27 @@ class Species(object):
 
         page = get_url(url)
 
-        images_list = [objects.get('mediaURL') for objects in page['dataObjects']
-                        if objects.get('mediaURL') is not None]
+        images_list = []
+        for objects in page['dataObjects']:
+            if objects.get('eolMediaURL') is not None and \
+               objects.get('mimeType')[:5] == 'image':
+                images_list.append(objects.get('eolMediaURL'))
 
         scientific_name = page['scientificName']
 
-        common_name = [name['vernacularName'] for name in page['vernacularNames']
-                        if name['language'] == 'en' and name.get('eol_preferred') == True][0]
+        common_name = ''
+        for name in page['vernacularNames']:
+            if name['language'] == 'en' and \
+               name.get('eol_preferred') == True:
+                common_name = name['vernacularName']
+                break
 
-        return cls(scientific_name, common_name, images_list)
+        # validate the key fields (don't give back a Species if they're not true):
+        has_images = len(images_list)
+        is_species = page['taxonConcepts']['taxonRank'] == 'Species'
+
+        if has_images and is_species:
+            return cls(scientific_name, common_name, images_list)
 
     def __repr__(self):
         return "{c} ({s})".format(c=self.common_name, s=self.scientific_name)
@@ -149,5 +171,6 @@ if __name__ == '__main__':
     data = load_data()
 
     new_game = Game(data,3)
+    new_game.questions[0].picture = 'aksjdljslf'
 
     new_game.play()
