@@ -26,27 +26,33 @@ def get_session_id_game():
 def new_game():
     pass
 
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
+def index():
+    id, game = get_session_id_game()
+
+    return render_template('index.html')
+
 @app.route('/question', methods=['GET'])
 def question():
     id, game = get_session_id_game()
-    current_question = game.questions[game.question_num-1]
+
     return render_template('question.html',
         question_num = game.question_num,
-        question = current_question )
+        question = game.curr_question )
 
 
 @app.route('/answer', methods=['POST'])
 def answer():
     id, game = get_session_id_game()
     guess_species = game.curr_question.species[int(request.form["choice"])]
-    current_question = game.questions[game.question_num-1]
-    game.curr_question.correct = (guess_species == game.curr_question.answer)
+    game.score_question(game.curr_question, guess_species)
 
     validation_dict = {True: "Correct!", False: "Incorrect!"}
 
     return render_template('answer.html',
                             question_num = game.question_num,
-                            question = current_question,
+                            question = game.curr_question,
                             validation = validation_dict[game.curr_question.correct])
 
 
