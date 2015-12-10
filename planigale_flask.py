@@ -17,7 +17,7 @@ def get_session_id_game():
     id = session['id']
 
     if id not in games:
-        games[id] = PlanigaleGame(data)
+        games[id] = PlanigaleGame(data,total_questions = 5)
         # forward to question for new game?
     game = games[id]
 
