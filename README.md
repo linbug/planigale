@@ -1,4 +1,7 @@
 # planigale
+
+<a href='http://www.recurse.com' title='Made with love at the Recurse Center'><img src='https://cloud.githubusercontent.com/assets/2883345/11325206/336ea5f4-9150-11e5-9e90-d86ad31993d8.png' height='20px'/></a>
+
 A squishy command-line quiz based on the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind. 
 Test your knowledge by matching the picture to the species!
 
