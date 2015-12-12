@@ -33,14 +33,28 @@ def index():
 
     return render_template('index.html')
 
-@app.route('/question', methods=['GET'])
+@app.route('/question', methods=['POST','GET'])
 def question():
     id, game = get_session_id_game()
 
+
+    if request.method == 'POST':
+        print("something happens")
+
+    # if request.form["hint"] == 'True':
+    #      hint = True
+
     return render_template('question.html',
         question_num = game.question_num,
-        question = game.curr_question )
+        question = game.curr_question,
+        hint = False )
 
+# def hint():
+#     hint = False
+#     if request.method == 'POST':
+#             print("something happens")
+#     if request.form["hint"] == True:
+#         print("something happens")
 
 @app.route('/answer', methods=['POST'])
 def answer():
@@ -54,6 +68,7 @@ def answer():
                             question_num = game.question_num,
                             question = game.curr_question,
                             validation = validation_dict[game.curr_question.correct])
+
 
 
 @app.route('/next', methods=['POST'])

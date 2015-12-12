@@ -24,16 +24,37 @@
 <img src = {{question.picture}}>
 
 <hr>
-<p> Question {{ question_number }} </p>
+<p> Question {{ question.question_number }} </p>
 <p> What species is in the picture? </p>
 
 <form  action="/answer" method="post">
-<input type="radio" name="choice" value="0" > {{question.species[0].scientific_name}} <br>
-<input type="radio" name="choice" value="1" > {{question.species[1].scientific_name}} <br>
-<input type="radio" name="choice" value="2" > {{question.species[2].scientific_name}} <br>
-<input type="submit" value="Submit">
+    <input type="radio" name="choice" value="0" default>
+    {{question.species[0].scientific_name}}
+    <br>
+    <input type="radio" name="choice" value="1" >
+    {{question.species[1].scientific_name}}
+    <br>
+    <input type="radio" name="choice" value="2" >
+    {{question.species[2].scientific_name}}
+    <br>
+    <br>
+    <button type="submit" value="0" > Submit! </button>
 </form>
 
+<br>
+
+
+<form  method="post" action = "/question">
+    <button type="submit" name = "hint" value = True > Hint </button>
+</form>
+
+{% if hint == True %}
+    <div>
+        <p>{{question.species[0].common_name}} </p>
+        <p>{{question.species[1].common_name}} </p>
+        <p>{{question.species[2].common_name}} </p>
+    </div>
+{% endif %}
 
 </div>
 
