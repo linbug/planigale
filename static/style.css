@@ -25,12 +25,23 @@
 
     h2{
      font-family: 'Roboto', sans-serif; font-weight: 100;
-      font-size: 20px;
+      font-size: 25px;
       font-weight: bold;
-      color: white;
+      color: black;
       text-align: left;
       padding: 0px 10px 10px 0px;
       margin: 10px 0px 0px 0px;
+     }
+
+     h3{
+    font-family: 'Roboto', sans-serif; font-weight: 100;
+      font-size: 15px;
+      font-weight: bold;
+      color: black;
+      text-align: left;
+      padding: 0px 10px 10px 0px;
+      margin: 10px 0px 0px 0px;
+
      }
 
     li{
@@ -81,6 +92,15 @@
       margin: 0 auto;
     }
 
+    .hidden>div {
+    display:none;
+    }
+
+    .visible>div {
+    display:block;
+    }
+
+
      a{
      font-family: 'Roboto', sans-serif;
      color: white;
@@ -107,6 +127,39 @@ max-width: 600px;
     color:#5CCCCC;
 }
 
+div.hidden {
+    height: 0px;
+}
+div {
+    height: 400px;
+    transition: height 0.5s;
+}
+
+.card-container {
+  height: 150px;
+  perspective: 600;
+  position: relative;
+  width: 150px;
+}
+.card {
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: all 1s ease-in-out;
+  width: 100%;
+}
+.card:click {
+  transform: rotateY(180deg);
+}
+.card .side {
+  backface-visibility: hidden;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+.card .back {
+  transform: rotateY(180deg);
+}
    @media (max-width: 300px){
 
      h1{
@@ -114,6 +167,7 @@ max-width: 600px;
      }
      h2{
       font-size: 15px;
+      color: black;
      }
      li{
       display: block;

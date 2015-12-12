@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 
+
 <head>
 
 <title>{{title}}</title>
@@ -21,14 +22,26 @@
 
 <div class = blogroll>
 
-  <img src="http://i.dailymail.co.uk/i/pix/2012/07/19/article-0-141F606E000005DC-916_634x744.jpg">
-  <p>Play a game of Planigale?</p>
+  <img src="http://i.dailymail.co.uk/i/pix/2012/07/19/article-0-141F606E000005DC-916_634x744.jpg"> </img>
+
+  <h2> Planigale is a game based on the Encyclopedia of Life. Match the picture to the species name! </h2>
 
   <form action="/question" method="get">
-    <button type="submit" value="Play Planigale">Play Planigale!</button>
-  </form>
+    <h3> Play a game of planigale! </h3>
+    How many questions?
+    <input type="text" name="num_questions" value="3" >  <br>
+    How difficult?
+    <input type= "button" name="Difficulty" value = "easy">
+    <input type= "button" name="Difficulty" value = "medium">
+    <input type= "button" name="Difficulty" value = "hard">
 
-</div>
+    <br>
+    <button type="submit" value="Play Planigale">Play a game of  Planigale!</button>
+  </form>
+  <br>
+  <br>
+
+
 
 </script>
 </body>
