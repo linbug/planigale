@@ -23,6 +23,8 @@
 <img src = {{question.picture}}>
 
 <hr>
+
+<a name="Answer"></a>
 <p> {{validation}} The answer was {{ question.answer.scientific_name }}
   ({{ question.answer.common_name }}).</p>
 
@@ -35,7 +37,7 @@
 </ul>
 
 <form method="post" action = "/next">
-<input type="submit" value="Next question">
+<button type="submit" >  Next question </button>
 </form>
 
 </div>

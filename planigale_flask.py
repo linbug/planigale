@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, flash, render_template, request, redirect, session, url_for
 from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 
@@ -40,7 +40,11 @@ def question():
     hint = False
     if request.method == 'POST':
         if request.form["hint"] == 'True':
-             hint = True
+            if game.hints_remaining>0:
+                hint = True
+                game.hints_remaining -= 1
+            else:
+                flash("Woops! No hints remaining!")
 
     return render_template('question.html',
         question_num = game.question_num,

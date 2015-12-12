@@ -27,7 +27,7 @@
 <p> Question {{ question.question_number }} </p>
 <p> What species is in the picture? </p>
 
-<form  action="/answer" method="post">
+<form  action="/answer#Answer" method="post">
     <input type="radio" name="choice" value="0" default>
     {{question.species[0].scientific_name}}
     <br>
@@ -38,23 +38,34 @@
     {{question.species[2].scientific_name}}
     <br>
     <br>
-    <button type="submit" value="0" > Submit! </button>
+    <button name = "submit" type="submit" value="0" > Submit! </button>
 </form>
 
 <br>
-
-
-<form  method="post" action = "/question">
-    <button type="submit" name = "hint" value = True > Hint </button>
+<hr>
+<br>
+<form  method="post" action = "/question#Buttons">
+    <button type="submit" name = "hint" value = True > It's too hard! Give me a hint </button>
 </form>
 
+<a name="Buttons"></a>
+
+
 {% if hint == True %}
-    <div>
-        <p>{{question.species[0].common_name}} </p>
-        <p>{{question.species[1].common_name}} </p>
-        <p>{{question.species[2].common_name}} </p>
+    <div class = hintbox >
+        <p>{{question.species[0].scientific_name}} ---> <b>{{question.species[0].common_name}} </b> </p>
+        <p>{{question.species[1].scientific_name}} ---> <b>{{question.species[1].common_name}} </b> </p>
+        <p>{{question.species[2].scientific_name}} ---> <b>{{question.species[2].common_name}} </b></p>
     </div>
 {% endif %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
 </div>
 

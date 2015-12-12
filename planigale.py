@@ -64,7 +64,8 @@ class Question(object):
 class PlanigaleGame(object):
     def __init__(self, data, total_questions=3, hints=0):
         self.score = 0
-        self.hints = 0
+        self.num_hints = 1
+        self.hints_remaining = self.num_hints
         self.total_questions = total_questions
         self.questions = [Question(data) for i in range(self.total_questions)]
         self.question_num = 1
@@ -82,7 +83,7 @@ class PlanigaleGame(object):
         else:
             return False
 
-    
+
 
 class PlanigaleConsole(object):
     def __init__(self, data, total_questions=3, hints=0):
