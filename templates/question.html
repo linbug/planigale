@@ -24,7 +24,7 @@
 <img src = {{question.picture}}>
 
 <hr>
-<p> Question {{ question.question_number }} </p>
+<p> Question {{ question_num }} of {{ total_questions }}</p>
 <p> What species is in the picture? </p>
 
 <form  action="/answer#Answer" method="post">
@@ -45,7 +45,7 @@
 <hr>
 <br>
 <form  method="post" action = "/question#Buttons">
-    <button type="submit" name = "hint" value = True > It's too hard! Give me a hint </button>
+    <button type="submit" name = "hint" value = True > It's too hard! Give me a hint! </button>
 </form>
 
 <a name="Buttons"></a>
@@ -56,6 +56,7 @@
         <p>{{question.species[0].scientific_name}} ---> <b>{{question.species[0].common_name}} </b> </p>
         <p>{{question.species[1].scientific_name}} ---> <b>{{question.species[1].common_name}} </b> </p>
         <p>{{question.species[2].scientific_name}} ---> <b>{{question.species[2].common_name}} </b></p>
+        <p> You have {{hints_remaining}} hints remaining </p>
     </div>
 {% endif %}
 

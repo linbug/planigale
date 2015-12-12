@@ -49,6 +49,8 @@ def question():
     return render_template('question.html',
         question_num = game.question_num,
         question = game.curr_question,
+        total_questions = game.total_questions,
+        hints_remaining = game.hints_remaining,
         hint = hint )
 
 # def hint():
