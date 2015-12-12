@@ -37,17 +37,15 @@ def index():
 def question():
     id, game = get_session_id_game()
 
-
+    hint = False
     if request.method == 'POST':
-        print("something happens")
-
-    # if request.form["hint"] == 'True':
-    #      hint = True
+        if request.form["hint"] == 'True':
+             hint = True
 
     return render_template('question.html',
         question_num = game.question_num,
         question = game.curr_question,
-        hint = False )
+        hint = hint )
 
 # def hint():
 #     hint = False
