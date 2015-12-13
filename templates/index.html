@@ -26,17 +26,19 @@
 
   <h2> Planigale is a game based on the Encyclopedia of Life. Match the picture to the species name! </h2>
 
-  <form action="/question" method="get">
+  <form action="/question" method="post">
     <h3> Play a game of planigale! </h3>
     How many questions?
     <input type="text" name="num_questions" value="3" >  <br>
-    How difficult?
-    <input type= "button" name="Difficulty" value = "easy">
-    <input type= "button" name="Difficulty" value = "medium">
-    <input type= "button" name="Difficulty" value = "hard">
+    <br>
+    How difficult can you handle?
+    <br>
+    <input type= "radio" name="difficulty" value = "easy">Easy (unlimited hints!) <br>
+    <input type= "radio" name="difficulty" value = "medium">Medium (limited hints!)<br>
+    <input type= "radio" name="difficulty" value = "hard">Hard (hints be damned!)<br>
 
     <br>
-    <button type="submit" value="Play Planigale">Play a game of  Planigale!</button>
+    <button type="submit" value="Play Planigale">Go!</button>
   </form>
   <br>
   <br>

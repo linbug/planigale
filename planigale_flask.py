@@ -33,10 +33,11 @@ def index():
 
     return render_template('index.html')
 
-@app.route('/question', methods=['GET'])
+
+@app.route('/question', methods=['POST','GET'])
 def question():
     id, game = get_session_id_game()
-
+    game.total_questions = int(request.form["num_questions"])
     return render_template('question.html',
         question_num = game.question_num,
         question = game.curr_question )
