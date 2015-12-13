@@ -36,15 +36,31 @@ def index():
 @app.route('/question', methods=['POST','GET'])
 def question():
     id, game = get_session_id_game()
-    game.total_questions = int(request.form["num_questions"])
+
+    difficulty_dict = {
+    "easy":game.total_questions,
+    "medium": int(game.total_questions/2),
+    "hard": 0
+    }
+
     hint = False
     if request.method == 'POST':
-        if request.form["hint"] == 'True':
-            if game.hints_remaining>0:
-                hint = True
-                game.hints_remaining -= 1
-            else:
-                flash("Woops! No hints remaining!")
+        try:
+            game.total_questions = int(request.form["num_questions"])
+            game.num_hints = difficulty_dict[request.form["difficulty"]]
+            game.hints_remaining = game.num_hints
+        except(Exception):
+            pass
+
+        try:
+            if request.form["hint"] == 'True':
+                if game.hints_remaining>0:
+                    hint = True
+                    game.hints_remaining -= 1
+                else:
+                    flash("Woops! No hints remaining!")
+        except(Exception):
+            pass
 
     return render_template('question.html',
         question_num = game.question_num,
