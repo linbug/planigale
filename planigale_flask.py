@@ -98,6 +98,7 @@ def answer():
 
     return render_template('answer.html',
                             question_num = game.question_num,
+                            total_questions = game.total_questions,
                             question = game.curr_question,
                             validation = validation)
 

@@ -37,7 +37,8 @@
 </ul>
 
 <form method="post" action = "/next">
-<button type="submit" >  Next question </button>
+
+<button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
 </form>
 
 </div>
