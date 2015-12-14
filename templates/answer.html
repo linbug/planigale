@@ -13,13 +13,14 @@
 <body >
 
 {% include 'header.html' %}
+{% import 'macro.html' as macros %}
 
 <div class = blogroll>
 
 <img src = {{question.picture}}>
 
 <hr>
-<p> Your guess was {{validation}}! The answer was <a href="{{ question.answer.web_url}}" target="_blank">{{ question.answer|string() }}</a>.</p>
+<p> Your guess was {{validation}}! The answer was <a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer|string()) }}</a>.</p>
 
 <p> <i>{{ question.text }} </i> </p>
 
@@ -28,7 +29,7 @@
 <ul>
   {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
   {% if species != question.answer %}
-  <li><img src="{{ thumb }}"><b><a href="{{ species.web_url }}" target="_blank">{{ species|string() }}</a>.</b> </li>
+  <li><img src="{{ thumb }}"><b><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species|string()) }}</a>.</b> </li>
   {% endif %}
   {% endfor %}
 </ul>

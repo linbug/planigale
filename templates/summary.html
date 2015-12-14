@@ -15,6 +15,7 @@
 <body >
 
 {% include 'header.html' %}
+{% import 'macro.html' as macros %}
 
 <div class = blogroll>
 
@@ -24,16 +25,16 @@
 
 <img src = {{question.picture}}>
 
-<p> You guessed {{question.guess.scientific_name ~ ' (' ~  question.guess.common_name ~ ')'}}! </p>
+<p> You guessed {{macros.italicise_names(question.guess.scientific_name) ~ ' (' ~  question.guess.common_name ~ ')'}}! </p>
 
-<p> The answer was {{question.answer.scientific_name ~ ' (' ~  question.answer.common_name ~ ')'}} </p>
+<p> The answer was {{macros.italicise_names(question.answer.scientific_name) ~ ' (' ~  question.answer.common_name ~ ')'}} </p>
 
 <ul>
 
 {% for species in question.species %}
 
 <li>
-{{species.scientific_name ~ ' (' ~  species.common_name ~ ')'}}
+{{macros.italicise_names(species.scientific_name) ~ ' (' ~  species.common_name ~ ')'}}
 
 </li>
 {% endfor %}
