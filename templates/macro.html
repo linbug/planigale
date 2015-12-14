@@ -1,0 +1,3 @@
+{% macro italicise_names (string) %}
+<i>{{' ' .join(string.split()[:2])}}</i> {{' '.join(string.split()[2:])}}
+{% endmacro %}
