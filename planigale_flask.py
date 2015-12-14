@@ -59,6 +59,11 @@ def newgame():
 @app.route('/question', methods=['POST','GET'])
 def question():
     game = get_game()
+
+    if request.method == 'GET':
+        if game.curr_question.guess is not None:
+            return redirect(url_for('summary'))
+
     if request.method == 'POST':
         try:
             if request.form["hint"] == 'True':
