@@ -69,6 +69,16 @@
     margin: 0;
      }
 
+
+    footer {
+    text-align: center;
+    /*background: -webkit-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));*/
+    background-color: rgba(0, 0, 0, 0.8);
+    background-size: cover;
+    color: white;
+    margin: 0;
+    }
+
     aside {
     position:fixed;
     top: 200px;
