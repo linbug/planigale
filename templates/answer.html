@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <head>
@@ -23,15 +22,18 @@
 <img src = {{question.picture}}>
 
 <hr>
-<p> {{validation}} The answer was {{ question.answer.scientific_name }}
-  ({{ question.answer.common_name }}).</p>
+<p> Your guess was {{validation}}! The answer was <a href="{{ question.answer.web_url}}" target="_blank">{{ question.answer|string() }}</a>.</p>
 
-<p> Your choices were: </p>
+<p> <i>{{ question.text }} </i> </p>
+
+<p> Your other choices were: </p>
 
 <ul>
-  <li>{{question.species[0].scientific_name}} ({{ question.species[0].common_name }}) </li>
-  <li>{{question.species[1].scientific_name}} ({{ question.species[1].common_name }}) </li>
-  <li>{{question.species[2].scientific_name}} ({{ question.species[2].common_name }}) </li>
+  {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+  {% if species != question.answer %}
+  <li><img src="{{ thumb }}"><b><a href="{{ species.web_url }}" target="_blank">{{ species|string() }}</a>.</b> </li>
+  {% endif %}
+  {% endfor %}
 </ul>
 
 <form method="post" action = "/next">

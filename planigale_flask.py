@@ -48,12 +48,13 @@ def answer():
     guess_species = game.curr_question.species[int(request.form["choice"])]
     game.score_question(game.curr_question, guess_species)
 
-    validation_dict = {True: "Correct!", False: "Incorrect!"}
+    validation = "Correct" if game.curr_question.correct else "Incorrect"
+
 
     return render_template('answer.html',
                             question_num = game.question_num,
                             question = game.curr_question,
-                            validation = validation_dict[game.curr_question.correct])
+                            validation = validation)
 
 
 @app.route('/next', methods=['POST'])
@@ -71,6 +72,10 @@ def summary():
 
     return render_template('summary.html',
                            game = game)
+
+@app.template_global(name='zip')
+def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
+    return __builtins__.zip(*args, **kwargs)
 
 if __name__ == '__main__':
 

@@ -44,7 +44,7 @@
     width:400;
      }
     a{
-    color: white;
+    color: black;
     }
      a:link {
     text-decoration: none;
@@ -83,16 +83,15 @@
 
      a{
      font-family: 'Roboto', sans-serif;
-     color: white;
+     color: Green;
     }
      a:hover{
-    color:#5CCCCC;
+    color:ForestGreen;
     }
-        img{
-   width:100%
-;
-max-width: 600px;
-     }
+img {
+    width: auto;
+    max-height: 400px;
+}
 
     li.external_links{
     display: inline;
@@ -102,10 +101,6 @@ max-width: 600px;
     float: right;
     /*background:#0000ff;*/
     }
-
-    i:hover{
-    color:#5CCCCC;
-}
 
    @media (max-width: 300px){
 
