@@ -89,8 +89,13 @@ def question():
 
 @app.route('/answer', methods=['POST'])
 def answer():
+    try:
+        choice = int(request.form["choice"])
+    except(Exception):
+        flash("Please select a species name!")
+        return redirect(url_for('question'))
     game = get_game()
-    guess_species = game.curr_question.species[int(request.form["choice"])]
+    guess_species = game.curr_question.species[choice]
     game.score_question(game.curr_question, guess_species)
 
     validation = "Correct" if game.curr_question.correct else "Incorrect"
