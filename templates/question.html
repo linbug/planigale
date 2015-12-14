@@ -28,9 +28,12 @@
 <form  action="/answer#Answer" method="post">
     {% for species in question.species %}
     <input type="radio" name="choice" value={{loop.index0}} default>
-    {{macros.italicise_names(species.scientific_name)}}
+    {{macros.italicise_names(species, hint=hint)}}
     <br>
     {% endfor %}
+{% if hint == True %}
+        <p> You have {{hints_remaining}} hints remaining </p>
+{% endif %}
     <br>
     <button name = "submit" type="submit" value="0" > Submit! </button>
 </form>
@@ -43,19 +46,6 @@
 </form>
 
 <a name="Buttons"></a>
-
-
-
-
-{% if hint == True %}
-    <div class = hintbox >
-        {% for species in question.species %}
-        <p> {{ macros.italicise_names(species.scientific_name) }} ---> <b>{{species.common_name}} </b> </p>
-        {% endfor %}
-
-        <p> You have {{hints_remaining}} hints remaining </p>
-    </div>
-{% endif %}
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}

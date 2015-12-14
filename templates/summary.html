@@ -25,16 +25,16 @@
 
 <img src = {{question.picture}}>
 
-<p> You guessed {{macros.italicise_names(question.guess.scientific_name) ~ ' (' ~  question.guess.common_name ~ ')'}}! </p>
+<p> You guessed {{macros.italicise_names(question.guess) }}! </p>
 
-<p> The answer was {{macros.italicise_names(question.answer.scientific_name) ~ ' (' ~  question.answer.common_name ~ ')'}} </p>
+<p> The answer was {{ macros.italicise_names(question.answer) }}. </p>
 
 <ul>
 
 {% for species in question.species %}
 
 <li>
-{{macros.italicise_names(species.scientific_name) ~ ' (' ~  species.common_name ~ ')'}}
+{{macros.italicise_names(species) }}
 
 </li>
 {% endfor %}

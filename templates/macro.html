@@ -1,3 +1,5 @@
-{% macro italicise_names (string) %}
-<i>{{' ' .join(string.split()[:2])}}</i> {{' '.join(string.split()[2:])}}
+{% macro italicise_names (species, hint=True) %}
+<i>{{' '.join(species.scientific_name.split()[:2])}}</i>
+{{'(' ~ ' '.join(species.scientific_name.replace('(', '').replace(')', '').split()[2:]) ~ ')'}}
+{% if hint %} - <b> {{  species.common_name }} </b>{% endif %}
 {% endmacro %}
