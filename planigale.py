@@ -49,6 +49,7 @@ class Question(object):
         self.species = random.sample(data,3)
         self.answer = random.choice(self.species)
         self.picture = random.choice(self.answer.images_list)
+        self.revealed_hint = False
         self.guess = None
         self.correct = None
 
@@ -64,7 +65,7 @@ class Question(object):
 class PlanigaleGame(object):
     def __init__(self, data, total_questions=3, hints=0):
         self.score = 0
-        self.num_hints = 1
+        self.num_hints = hints
         self.hints_remaining = self.num_hints
         self.total_questions = total_questions
         self.questions = [Question(data) for i in range(self.total_questions)]

@@ -10,14 +10,14 @@ def get_new_session():
     global curr_session
     curr_session += 1
 
-def get_session_id_game():
+def get_session_id_game(total_questions=3,hints=1):
     if 'id' not in session:
         session['id'] = get_new_session()
         # forward to question for new game?
     id = session['id']
 
     if id not in games:
-        games[id] = PlanigaleGame(data,total_questions = 5)
+        games[id] = PlanigaleGame(data, total_questions, hints)
         # forward to question for new game?
     game = games[id]
 
@@ -35,28 +35,43 @@ def index():
 
 @app.route('/question', methods=['POST','GET'])
 def question():
-    id, game = get_session_id_game()
 
-    difficulty_dict = {
-    "easy":game.total_questions,
-    "medium": int(game.total_questions/2),
-    "hard": 0
-    }
-
-    hint = False
     if request.method == 'POST':
         try:
-            game.total_questions = int(request.form["num_questions"])
-            game.num_hints = difficulty_dict[request.form["difficulty"]]
-            game.hints_remaining = game.num_hints
+
+            total_questions = int(request.form["num_questions"])
+
+            difficulty_dict = {
+            "easy":total_questions,
+            "medium": int(total_questions/2),
+            "hard": 0
+            }
+
+            num_hints = difficulty_dict[request.form["difficulty"]]
+            print(str(num_hints) + "hints from index")
+            print(str(total_questions) + "total_questions from index")
         except(Exception):
             pass
+
+        print("STILL " + str(num_hints) + "and" + str(total_questions) )
+
+        try:
+            print("PASSING IN STUFF")
+            id, game = get_session_id_game(total_questions, num_hints)
+            print(str(game.num_hints) + " HINTS")
+        except:
+            id, game = get_session_id_game()
 
         try:
             if request.form["hint"] == 'True':
                 if game.hints_remaining>0:
-                    hint = True
-                    game.hints_remaining -= 1
+                    if game.curr_question.revealed_hint == False:
+                        game.curr_question.revealed_hint = True
+                        game.hints_remaining -= 1
+                    else:
+                        pass
+                elif game.curr_question.revealed_hint == True:
+                    pass
                 else:
                     flash("Woops! No hints remaining!")
         except(Exception):
@@ -67,7 +82,7 @@ def question():
         question = game.curr_question,
         total_questions = game.total_questions,
         hints_remaining = game.hints_remaining,
-        hint = hint )
+        hint = game.curr_question.revealed_hint )
 
 @app.route('/answer', methods=['POST'])
 def answer():
