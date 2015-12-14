@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, flash, render_template, request, redirect, session, url_for
 from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 
@@ -10,41 +10,81 @@ def get_new_session():
     global curr_session
     curr_session += 1
 
-def get_session_id_game():
+
+def get_session_id():
     if 'id' not in session:
         session['id'] = get_new_session()
-        # forward to question for new game?
-    id = session['id']
+    return session['id']
+
+
+def get_game():
+    id = get_session_id()
 
     if id not in games:
-        games[id] = PlanigaleGame(data,total_questions = 5)
+        games[id] = PlanigaleGame(data)
         # forward to question for new game?
     game = games[id]
 
-    return id, game
+    return game
 
-def new_game():
-    pass
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    id, game = get_session_id_game()
-
     return render_template('index.html')
 
-@app.route('/question', methods=['GET'])
+@app.route('/newgame', methods = ['POST'])
+def newgame():
+    try:
+        id = get_session_id()
+
+        total_questions = int(request.form["num_questions"])
+
+        difficulty_dict = {
+            "easy":total_questions,
+            "medium": int(total_questions/2),
+            "hard": 0
+        }
+
+        num_hints = difficulty_dict[request.form["difficulty"]]
+
+        games[id] = PlanigaleGame(data, total_questions, num_hints)
+
+        return redirect(url_for('question'))
+    except(Exception):
+        flash("Error while creating game. Please retry.")
+        return redirect(url_for('index'))
+
+
+@app.route('/question', methods=['POST','GET'])
 def question():
-    id, game = get_session_id_game()
+    game = get_game()
+    if request.method == 'POST':
+        try:
+            if request.form["hint"] == 'True':
+                if game.hints_remaining>0:
+                    if game.curr_question.revealed_hint == False:
+                        game.curr_question.revealed_hint = True
+                        game.hints_remaining -= 1
+                    else:
+                        pass
+                elif game.curr_question.revealed_hint == True:
+                    pass
+                else:
+                    flash("Woops! No hints remaining!")
+        except(Exception):
+            pass
 
     return render_template('question.html',
         question_num = game.question_num,
-        question = game.curr_question )
-
+        question = game.curr_question,
+        total_questions = game.total_questions,
+        hints_remaining = game.hints_remaining,
+        hint = game.curr_question.revealed_hint )
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    id, game = get_session_id_game()
+    game = get_game()
     guess_species = game.curr_question.species[int(request.form["choice"])]
     game.score_question(game.curr_question, guess_species)
 
@@ -57,9 +97,10 @@ def answer():
                             validation = validation)
 
 
+
 @app.route('/next', methods=['POST'])
 def next():
-    id, game = get_session_id_game()
+    game = get_game()
 
     if game.next_question():
         return redirect(url_for('question'))
@@ -68,7 +109,7 @@ def next():
 
 @app.route('/summary', methods=['GET'])
 def summary():
-    id, game = get_session_id_game()
+    game = get_game()
 
     return render_template('summary.html',
                            game = game)

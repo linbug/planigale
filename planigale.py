@@ -62,7 +62,8 @@ class Planigale(object):
 class PlanigaleGame(object):
     def __init__(self, species_data, total_questions=3, hints=0):
         self.score = 0
-        self.hints = 0
+        self.num_hints = hints
+        self.hints_remaining = self.num_hints
         self.total_questions = total_questions
         self.questions = [Question(species_data) for i in range(self.total_questions)]
         self.question_num = 1
@@ -89,6 +90,7 @@ class Question(object):
         self.species_text = [random.choice(s.text_list) for s in self.species if s.text_list is not None]
         self.answer, self.picture, self.thumb, self.text = random.choice(
             list(zip(self.species, self.species_picture, self.species_thumb, self.species_text)))
+        self.revealed_hint = False
         self.guess = None
         self.correct = None
 
@@ -130,7 +132,6 @@ class Species(object):
        species_copy.text = random.choice(species_copy.text_list) \
                            if species_copy.text_list is not None else None
        return species_copy
-
 
 
     @classmethod

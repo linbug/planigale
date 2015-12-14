@@ -25,12 +25,23 @@
 
     h2{
      font-family: 'Roboto', sans-serif; font-weight: 100;
-      font-size: 20px;
+      font-size: 25px;
       font-weight: bold;
-      color: white;
+      color: black;
       text-align: left;
       padding: 0px 10px 10px 0px;
       margin: 10px 0px 0px 0px;
+     }
+
+     h3{
+    font-family: 'Roboto', sans-serif; font-weight: 100;
+      font-size: 15px;
+      font-weight: bold;
+      color: black;
+      text-align: left;
+      padding: 0px 10px 10px 0px;
+      margin: 10px 0px 0px 0px;
+
      }
 
     li{
@@ -81,6 +92,44 @@
       margin: 0 auto;
     }
 
+    .hintbox{
+
+        /*background-color: #226666;*/
+        padding: 10px 10px 10px 10px;
+        margin: 10px 10px 10px 10px;
+        /*opacity: 0.2;*/
+    }
+
+    button {
+    border: 0;
+    background: #0087cc;
+    border-radius: 4px;
+    box-shadow: 0 5px 0 #006599;
+    cursor: pointer;
+    color: white;
+    font: inherit;
+    margin: 0;
+    outline: 0;
+    padding: 12px 20px;
+    transition: all .1s linear;
+
+    }
+
+    button:active {
+    box-shadow: 0 2px 0 #006599;
+    transform: translateY(3px);
+    }
+
+    /*.submit{
+
+    background: #0087cc;
+    }
+
+    .hint{
+
+    background: #fff;
+
+    }*/
      a{
      font-family: 'Roboto', sans-serif;
      color: Green;
@@ -109,6 +158,7 @@ img {
      }
      h2{
       font-size: 15px;
+      color: black;
      }
      li{
       display: block;
