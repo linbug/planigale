@@ -10,32 +10,40 @@ def get_new_session():
     global curr_session
     curr_session += 1
 
-def get_session_id_game(total_questions=3,hints=1):
+def get_session():
     if 'id' not in session:
         session['id'] = get_new_session()
-        # forward to question for new game?
-    id = session['id']
+    return session['id']
 
+
+
+def get_session_id_game():
+    id =get_session()
     if id not in games:
         games[id] = PlanigaleGame(data, total_questions, hints)
         # forward to question for new game?
     game = games[id]
+    else:
+        redirect(url_for('index'))
+
+
 
     return id, game
 
-def new_game():
-    pass
+def new_game(total_questions,hints):
+    game = PlanigaleGame(data, total_questions, hints)
+
+
+
+    return game
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    id, game = get_session_id_game()
+
+
 
     return render_template('index.html')
-
-@app.route('/question', methods=['POST','GET'])
-def question():
-
     if request.method == 'POST':
         try:
 
@@ -48,19 +56,42 @@ def question():
             }
 
             num_hints = difficulty_dict[request.form["difficulty"]]
-            print(str(num_hints) + "hints from index")
-            print(str(total_questions) + "total_questions from index")
-        except(Exception):
-            pass
-
-        print("STILL " + str(num_hints) + "and" + str(total_questions) )
-
-        try:
-            print("PASSING IN STUFF")
             id, game = get_session_id_game(total_questions, num_hints)
-            print(str(game.num_hints) + " HINTS")
-        except:
-            id, game = get_session_id_game()
+        except(Exception):
+            id, game = get_session_id_game(3,1)
+
+# @app.route('/newgame', methods = ['POST, GET'])
+# def newgame():
+#     if request.method == 'POST':
+#         try:
+
+#             total_questions = int(request.form["num_questions"])
+
+#             difficulty_dict = {
+#             "easy":total_questions,
+#             "medium": int(total_questions/2),
+#             "hard": 0
+#             }
+
+#             num_hints = difficulty_dict[request.form["difficulty"]]
+#             id, game = get_session_id_game(total_questions, num_hints)
+#         except(Exception):
+#             id, game = get_session_id_game(3,1)
+
+        # print("STILL " + str(num_hints) + "and" + str(total_questions) )
+
+        # try:
+        #     print("PASSING IN STUFF")
+        #     id, game = get_session_id_game(total_questions, num_hints)
+        #     print(str(game.num_hints) + " HINTS")
+        # except:
+        #     id, game = get_session_id_game()
+
+
+
+
+@app.route('/question', methods=['POST','GET'])
+def question():
 
         try:
             if request.form["hint"] == 'True':
