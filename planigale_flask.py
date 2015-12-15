@@ -1,4 +1,6 @@
-from flask import Flask, flash, render_template, request, redirect, session, url_for
+from flask import Flask, flash, render_template, request, redirect, session, url_for, g
+import logging
+from logging.handlers import RotatingFileHandler
 from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 
@@ -7,24 +9,50 @@ app.secret_key =  os.urandom(24)
 
 
 def get_new_session():
-    global curr_session
-    curr_session += 1
+    app.logger.error("Getting new session..")
+    curr_session = getattr(g, '_curr_session', None)
+    if curr_session is None:
+        curr_session = g._curr_session = 0
+    else:
+        curr_session = g._curr_session = curr_session + 1
+
+    app.logger.error("New session # {} created.".format(curr_session))
+    return curr_session
+
+@app.before_first_request
+def get_species_data():
+    app.logger.error("Getting species data..")
+    data = getattr(g, '_species_data', None)
+    if data is None:
+        data = g._species_data = Planigale.load_species()
+
+    app.logger.error("Loaded {} species.".format(len(data)))
+    return data
 
 
 def get_session_id():
+    app.logger.error("Getting session ID")
     if 'id' not in session:
         session['id'] = get_new_session()
+
+    app.logger.error("Session # {} accessed.".format(session['id']))
     return session['id']
 
 
 def get_game():
+    app.logger.error("Getting game")
     id = get_session_id()
 
+    games = getattr(g, '_games', None)
+    if games is None:
+        games = g._games = {}
+
     if id not in games:
-        games[id] = PlanigaleGame(data)
+        games[id] = PlanigaleGame(get_species_data())
         # forward to question for new game?
     game = games[id]
 
+    app.logger.error("Game object loaded for session # {}.".format(id))
     return game
 
 
@@ -35,6 +63,7 @@ def index():
 
 @app.route('/newgame', methods = ['POST'])
 def newgame():
+    app.logger.error("Running newgame")
     try:
         id = get_session_id()
 
@@ -48,11 +77,12 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        games[id] = PlanigaleGame(data, total_questions, num_hints)
+        games[id] = PlanigaleGame(get_species_data(), total_questions, num_hints)
 
         return redirect(url_for('question'))
-    except(Exception):
+    except Exception as ex:
         flash("Error while creating game. Please retry.")
+        app.logger.error("An exception occured while getting newgame: {}".format(ex))
         return redirect(url_for('index'))
 
 
@@ -130,11 +160,9 @@ def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
     return __builtins__.zip(*args, **kwargs)
 
 if __name__ == '__main__':
+    handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=1)
+    # handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+    app.logger.error("It isn't working?")
 
-    curr_session = 0
-
-    data = Planigale.load_species()
-
-    games = {}
-
-    app.run(debug = True)
+    app.run()
