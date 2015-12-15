@@ -2,9 +2,9 @@
       text-align: left;
       /*background-image: url("banner4.jpg");*/
       background-position: left;
-      background-size: cover;
+      /*background-size: cover;*/
       background-repeat: no-repeat;
-      background-position: -200px ;
+      /*background-position: -200px ;*/
       background-attachment: fixed;
       color: black;
       margin:0 auto;
@@ -54,6 +54,7 @@
     align:left;
     width:400;
      }
+
     a{
     color: black;
     }
@@ -96,7 +97,7 @@
       line-height: 28px;
       text-align:justify;
     }
-    .blogroll{
+    .main{
       max-width: 600px;
       padding: 20px;
       margin: 0 auto;
@@ -129,6 +130,22 @@
     box-shadow: 0 2px 0 #006599;
     transform: translateY(3px);
     }
+
+    .square1 {
+  background: #00aa9d;
+  border-radius: 3px;
+  height: 50px;
+  margin: 10px;
+  /*float:left;*/
+  /*position: absolute;*/
+  transition: transform 0.8s;
+  width: 150px;
+}
+
+#wrapper{
+
+    display:inline;
+}
 
     /*.submit{
 

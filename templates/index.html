@@ -7,23 +7,45 @@
 
 <title>{{title}}</title>
 
- <link rel="shortcut icon" href="happy.jpg">
+ <link rel="shortcut icon" href="https://en.wikipedia.org/wiki/Narrow-nosed_planigale#/media/File:Planigale_tenuirostris.jpg">
 <link rel="stylesheet" href="static/style.css"/>
 <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
 
 </head>
-{% include 'swag.html' %}
 <body >
+{% include 'swag.html' %}
 {% include 'header.html' %}
 
-<div class = blogroll>
+<div class = main>
 
-  <img src="http://i.dailymail.co.uk/i/pix/2012/07/19/article-0-141F606E000005DC-916_634x744.jpg"> </img>
+  <h2> Planigale is a matching game based on the Encyclopedia of Life. </h2>
 
-  <h2> Planigale is a game based on the Encyclopedia of Life. Match the picture to the species name! </h2>
+  <div id='Intro'>
 
+    <p> All organisms that have been discovered by science have been given a Latin name. These names follow a formal naming system first popularised by the Swedish botanist Carl Linnaeus called <a href='https://en.wikipedia.org/wiki/Binomial_nomenclature'>binomial nomenclature</a>: the first word relates to the organism's <a href = 'https://en.wikipedia.org/wiki/Genus'>genus</a> grouping, and the second name to the <a href = https://en.wikipedia.org/wiki/Species>species</a> grouping. The information in the brackets that comes afterwards relates the the person that first described that organism, and in what year.</p>
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Planigale_tenuirostris.jpg"> </img>
+
+    <div id="wrapper">
+        <div class="square1">Genus</div>
+        <div class="square1">Species</div>
+        <div class="square1">Something else</div>
+        <div class="square1">Something else</div>
+    </div>
+ </div>
+
+    <!-- <h3><i>Planigale tenuirostris</i> (Troughton, 1928)</h3> -->
+
+<div id="instructions">
+
+    <h2> Instructions</h2>
+    <p> Match the picture of the organism to its Latin binomial name to gain points and glory! Hints will show you the species' common name. </p>
+
+</div>
+
+<div id="newgame">
   <form action="/newgame" method="post">
-    <h3> Play a game of planigale! </h3>
+    <h2> Play a game of planigale! </h2>
     How many questions?
     <input type="text" name="num_questions" value="3" >  <br>
     <br>
@@ -36,8 +58,7 @@
     <br>
     <button type="submit" value="Play Planigale">Go!</button>
   </form>
-  <br>
-  <br>
+</div>
 </div>
 
 {% include 'footer.html' %}
