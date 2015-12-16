@@ -15,29 +15,38 @@
 {% include 'header.html' %}
 {% import 'macro.html' as macros %}
 
-<div class = main>
+<div class="main_wider">
+<div class="qnbox">
+  <img src = {{question.picture}}>
+</div>
 
-<img src = {{question.picture}}>
+<div class="answerbox">
+  <h2>Your guess was {{validation}}!</h2>
+  <p>The other choices were:</p>
+  <div class="table">
+    {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+    {% if species != question.answer %}
+    <div class="row">
+      <div class="col">
+        <img src="{{ thumb }}">
+      </div>
+      <div class="col"><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a></div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+<div class="answertext">
+  <p>The answer was:</p>
+  <p class="answer"><a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a></p>
 
-<hr>
-<p> Your guess was {{validation}}! The answer was <a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a>.</p>
+  <p> <i>{{ question.text }} </i> </p>
 
-<p> <i>{{ question.text }} </i> </p>
+  <form method="post" action = "/next">
 
-<p> Your other choices were: </p>
-
-<ul>
-  {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
-  {% if species != question.answer %}
-  <li><img src="{{ thumb }}"><b><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a>.</b> </li>
-  {% endif %}
-  {% endfor %}
-</ul>
-
-<form method="post" action = "/next">
-
-<button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
-</form>
+    <button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
+  </form>
+</div>
 
 </div>
 

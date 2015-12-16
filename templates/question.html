@@ -1,4 +1,4 @@
-
+<html>
 
 <!DOCTYPE html>
 
@@ -31,27 +31,30 @@
                 <p> Question {{ question_num }} of {{ total_questions }}</p>
                 <p> What species is in the picture? </p>
 
-                <form  action="/answer#Answer" method="post">
+                <div class="center-form">
+                <form class="hform" action="/answer#Answer" method="post">
+                  <div class='table'>
                     {% for species in question.species %}
-                    <input type="radio" name="choice" value={{loop.index0}} default>
-                    {{macros.italicise_names(species, hint=hint)}}
-                    <br>
+                    <div class='row'>
+                      <div class='col'>
+                        <input type="radio" name="choice" value={{loop.index0}} default>
+                      </div>
+                      <div class='col'>
+                        {{macros.italicise_names(species, hint=hint)}}
+                      </div>
+                    </div>
                     {% endfor %}
+                   </div>
                     {% if hint == True %}
                     <p> You have {{hints_remaining}} hints remaining </p>
                     {% endif %}
                     <br>
                     <button name = "submit" type="submit" value="0" > Submit! </button>
                 </form>
-
-                <br>
-                <hr>
-                <br>
-                <form  method="post" action = "/question#Buttons">
-                    <button type="submit" name = "hint" value = True > It's too hard! Give me a hint! </button>
+                <form class="hform" method="post" action = "/question#Buttons">
+                    <button type="submit" name="hint" value="True"> Hint! </button>
                 </form>
-
-                <a name="Buttons"></a>
+                </div>
 
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -68,3 +71,4 @@
 
     {% include 'footer.html' %}
 </body>
+</html>

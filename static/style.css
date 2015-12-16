@@ -21,6 +21,28 @@
       height:100%;
     }
 
+   .table {
+       display: table;
+       padding: 5px;
+   }
+   .row {
+       display: table-row;
+       padding: 5px;
+   }
+   .col {
+       display: table-cell;
+       padding: 5px;
+   }
+
+   p.answer {
+       padding: 0px 50px;
+   }
+
+   .answertext {
+       clear: both;
+       padding: 10px 50px;
+   }
+
      h1 {
       font-family: 'Roboto', sans-serif; font-weight: 100;
       font-size: 30px;
@@ -145,8 +167,8 @@
         max-width: 500px;
         padding: 0px 0px 0px 30px;
         margin-left: 500px;
-
-
+        border-style: solid;
+        border-width: 3px 0px;
     }
 
     .hintbox{
@@ -169,6 +191,9 @@
         margin: 0 auto -50px;
 
     }
+    .center-form { display:block ;  margin:auto; }
+    form.hform { display:inline }
+    button[type=submit] { padding:4px 0 ; width:80px }
 
     button {
     border: 0;
@@ -180,7 +205,7 @@
     font: inherit;
     margin: 0;
     outline: 0;
-    padding: 12px 20px;
+    /* padding: 12px 20px; */
     transition: all .1s linear;
 
     }
@@ -224,7 +249,7 @@
     }
 img {
     max-width: 100%;
-    max-height: 400px;
+    max-height: 450px;
 }
 
     li.external_links{
