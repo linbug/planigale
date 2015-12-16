@@ -1,49 +1,57 @@
+<html>
+
+  <!DOCTYPE html>
+
+  <head>
+
+    <title>{{title}}</title>
+
+    <link rel="shortcut icon" href="happy.jpg">
+    <link rel="stylesheet" href="static/style.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body >
+
+    {% include 'header.html' %}
+    {% import 'macro.html' as macros %}
+
+    <div class="main">
+
+      <p> You got {{ game.score }} out of {{ game.total_questions }} questions correct! </p>
+
+      {% for question in game.questions %}
+      <p> Question # {{ loop.index }} </p>
+        <div class="table">
+          {% for species in question.species %}
+          <div class="row{% if question.answer == species %} answer{% endif %}">
+            <div class="col">
+              <img scr="{{ question.species_thumb[loop.index0] }}">
+            </div>
+            <div class="col">
+              {{ macros.italicise_names(species) }}
+            </div>
+            <div class="col">
+              {% if question.guess == species %}
+              {% if question.guess == question.answer %}
+              <i class="fa fa-check"></i>
+              {% else %}
+              <i class="fa fa-times"></i>
+              {% endif %}
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+      {% endfor %}
 
 
-<!DOCTYPE html>
+    </div>
 
-<head>
-
-<title>{{title}}</title>
-
- <link rel="shortcut icon" href="happy.jpg">
-<link rel="stylesheet" href="static/style.css"/>
-<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
-
-</head>
-
-<body >
-
-{% include 'header.html' %}
-{% import 'macro.html' as macros %}
-
-<div class = main>
-
-<p> You got {{game.score}} out of {{game.total_questions}} questions correct! </p>
-
-{% for question in game.questions %}
-
-<img src = {{question.picture}}>
-
-<p> You guessed {{macros.italicise_names(question.guess) }}! </p>
-
-<p> The answer was {{ macros.italicise_names(question.answer) }}. </p>
-
-<ul>
-
-{% for species in question.species %}
-
-<li>
-{{macros.italicise_names(species) }}
-
-</li>
-{% endfor %}
-</ul>
-
-{% endfor %}
-
-
-</div>
-
-{% include 'footer.html' %}
-</body>
+    {% include 'footer.html' %}
+  </body>
+</html>

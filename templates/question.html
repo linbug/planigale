@@ -1,8 +1,8 @@
 <html>
 
-<!DOCTYPE html>
+  <!DOCTYPE html>
 
-<head>
+  <head>
 
     <title>{{title}}</title>
 
@@ -10,65 +10,62 @@
     <link rel="stylesheet" href="static/style.css"/>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
 
-</head>
+  </head>
 
-<body >
+  <body >
     <div class='pagewrapper'>
 
-        {% include 'header.html' %}
-        {% import 'macro.html' as macros %}
+      {% include 'header.html' %}
+      {% import 'macro.html' as macros %}
 
-        <div class = main_wider>
+      <div class = main_wider>
 
-            <div class = qnbox>
 
-                <img src = {{question.picture}}>
+        <div class=ans-text>
+          <div class="ans-pic">
+            <img src="{{question.picture}}">
+          </div>
+          <h2> What species is in the picture? </h2>
+          <p> Question {{ question_num }} of {{ total_questions }}</p>
 
-            </div>
-
-            <div class=answerbox>
-                <hr>
-                <p> Question {{ question_num }} of {{ total_questions }}</p>
-                <p> What species is in the picture? </p>
-
-                <div class="center-form">
-                <form class="hform" action="/answer#Answer" method="post">
-                  <div class='table'>
-                    {% for species in question.species %}
-                    <div class='row'>
-                      <div class='col'>
-                        <input type="radio" name="choice" value={{loop.index0}} default>
-                      </div>
-                      <div class='col'>
-                        {{macros.italicise_names(species, hint=hint)}}
-                      </div>
-                    </div>
-                    {% endfor %}
-                   </div>
-                    {% if hint == True %}
-                    <p> You have {{hints_remaining}} hints remaining </p>
-                    {% endif %}
-                    <br>
-                    <button name = "submit" type="submit" value="0" > Submit! </button>
-                </form>
-                <form class="hform" method="post" action = "/question#Buttons">
-                    <button type="submit" name="hint" value="True"> Hint! </button>
-                </form>
+          <div class="center-form">
+            <form class="hform" action="/answer" method="post">
+              <div class='table'>
+                {% for species in question.species %}
+                <div class='row'>
+                  <div class='col'>
+                    <input type="radio" name="choice" value={{loop.index0}} default>
+                  </div>
+                  <div class='col'>
+                    {{macros.italicise_names(species, hint=hint)}}
+                  </div>
                 </div>
-
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                <p>{{ message }}</p>
                 {% endfor %}
-                {% endif %}
-                {% endwith %}
-            </div>
+              </div>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              {% for message in messages %}
+              <p>{{ message }}</p>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+              {% if hint == True %}
+              <p> You have {{hints_remaining}} hints remaining.</p>
+              {% endif %}
+              <br>
+              <button name = "submit" type="submit" value="0" > Submit! </button>
+            </form>
+            <form class="hform" method="post" action = "/question#Buttons">
+              <button type="submit" name="hint" value="True"> Hint! </button>
+            </form>
+          </div>
+
         </div>
+      </div>
     </div>
 
     <div class='push'></div>
 
     {% include 'footer.html' %}
-</body>
+  </body>
 </html>

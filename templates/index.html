@@ -1,70 +1,75 @@
-
-
 <!DOCTYPE html>
+<html>
+  <head>
+
+    <title>{{title}}</title>
+
+    <link rel="shortcut icon" href="https://en.wikipedia.org/wiki/Narrow-nosed_planigale#/media/File:Planigale_tenuirostris.jpg">
+    <link rel="stylesheet" href="static/style.css"/>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+
+  </head>
+  <body >
+    {% include 'header.html' %}
+    {% include 'swag.html' %}
 
 
-<head>
 
-<title>{{title}}</title>
+    <div class = main>
 
- <link rel="shortcut icon" href="https://en.wikipedia.org/wiki/Narrow-nosed_planigale#/media/File:Planigale_tenuirostris.jpg">
-<link rel="stylesheet" href="static/style.css"/>
-<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+      <h2> Planigale is a matching game based on the Encyclopedia of Life. </h2>
 
-</head>
-<body >
-{% include 'header.html' %}
-{% include 'swag.html' %}
+      <div id='Intro'>
 
+        <p> All organisms that have been discovered by science have been given a Latin name. These names follow a formal naming system first popularised by the Swedish botanist Carl Linnaeus called <a href='https://en.wikipedia.org/wiki/Binomial_nomenclature'>binomial nomenclature</a>: the first word relates to the organism's <a href = 'https://en.wikipedia.org/wiki/Genus'>genus</a> grouping, and the second name to the <a href = https://en.wikipedia.org/wiki/Species>species</a> grouping. The information in the brackets that comes afterwards relates the the person that first described that organism, and in what year.</p>
 
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Planigale_tenuirostris.jpg"> </img>
 
-<div class = main>
+        <div id="wrapper">
+          <div class="square1">Genus</div>
+          <div class="square1">Species</div>
+          <div class="square1">Something else</div>
+          <div class="square1">Something else</div>
+        </div>
+      </div>
 
-  <h2> Planigale is a matching game based on the Encyclopedia of Life. </h2>
+      <!-- <h3><i>Planigale tenuirostris</i> (Troughton, 1928)</h3> -->
 
-  <div id='Intro'>
+      <div id="instructions">
 
-    <p> All organisms that have been discovered by science have been given a Latin name. These names follow a formal naming system first popularised by the Swedish botanist Carl Linnaeus called <a href='https://en.wikipedia.org/wiki/Binomial_nomenclature'>binomial nomenclature</a>: the first word relates to the organism's <a href = 'https://en.wikipedia.org/wiki/Genus'>genus</a> grouping, and the second name to the <a href = https://en.wikipedia.org/wiki/Species>species</a> grouping. The information in the brackets that comes afterwards relates the the person that first described that organism, and in what year.</p>
+        <h2> Instructions</h2>
+        <p> Match the picture of the organism to its Latin binomial name to gain points and glory! Hints will show you the species' common name. </p>
 
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Planigale_tenuirostris.jpg"> </img>
+      </div>
 
-    <div id="wrapper">
-        <div class="square1">Genus</div>
-        <div class="square1">Species</div>
-        <div class="square1">Something else</div>
-        <div class="square1">Something else</div>
+      <div id="newgame">
+        <form action="/newgame" method="post">
+          <h2> Play a game of planigale! </h2>
+          How many questions?
+          <input type="text" name="num_questions" value="3" >  <br>
+          <br>
+          How difficult can you handle?
+          <br>
+          <input type= "radio" name="difficulty" value = "easy">Easy (unlimited hints!) <br>
+          <input type= "radio" name="difficulty" value = "medium">Medium (limited hints!)<br>
+          <input type= "radio" name="difficulty" value = "hard">Hard (hints be damned!)<br>
+
+          <br>
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          {% for message in messages %}
+          <p>{{ message }}</p>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+          <button type="submit" value="Play Planigale">Go!</button>
+        </form>
+      </div>
+
     </div>
- </div>
+    <div class='push'></div>
+    {% include 'footer.html' %}
 
-    <!-- <h3><i>Planigale tenuirostris</i> (Troughton, 1928)</h3> -->
-
-<div id="instructions">
-
-    <h2> Instructions</h2>
-    <p> Match the picture of the organism to its Latin binomial name to gain points and glory! Hints will show you the species' common name. </p>
-
-</div>
-
-<div id="newgame">
-  <form action="/newgame" method="post">
-    <h2> Play a game of planigale! </h2>
-    How many questions?
-    <input type="text" name="num_questions" value="3" >  <br>
-    <br>
-    How difficult can you handle?
-    <br>
-    <input type= "radio" name="difficulty" value = "easy">Easy (unlimited hints!) <br>
-    <input type= "radio" name="difficulty" value = "medium">Medium (limited hints!)<br>
-    <input type= "radio" name="difficulty" value = "hard">Hard (hints be damned!)<br>
-
-    <br>
-    <button type="submit" value="Play Planigale">Go!</button>
-  </form>
-</div>
-
-</div>
-<div class='push'></div>
-{% include 'footer.html' %}
-
-</body>
+  </body>
+</html>

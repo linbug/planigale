@@ -1,54 +1,53 @@
 <!DOCTYPE html>
+<html>
+  <head>
 
-<head>
+    <title>{{title}}</title>
 
-<title>{{title}}</title>
+    <link rel="shortcut icon" href="happy.jpg">
+    <link rel="stylesheet" href="static/style.css"/>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
 
- <link rel="shortcut icon" href="happy.jpg">
-<link rel="stylesheet" href="static/style.css"/>
-<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+  </head>
 
-</head>
+  <body >
 
-<body >
+    {% include 'header.html' %}
+    {% import 'macro.html' as macros %}
 
-{% include 'header.html' %}
-{% import 'macro.html' as macros %}
+    <div class="pagewrapper">
+      <div class="main_wider">
 
-<div class="main_wider">
-<div class="qnbox">
-  <img src = {{question.picture}}>
-</div>
+        <div class="ans-text">
+          <div class="ans-pic">
+            <img src="{{ question.picture }}">
+          </div>
+          <h2>Your guess was {{validation}}!</h2>
+          <p>The answer was:</p>
+          <p class="answer"><a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a></p>
 
-<div class="answerbox">
-  <h2>Your guess was {{validation}}!</h2>
-  <p>The other choices were:</p>
-  <div class="table">
-    {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
-    {% if species != question.answer %}
-    <div class="row">
-      <div class="col">
-        <img src="{{ thumb }}">
+          <p> <i>{{ question.text }} </i> </p>
+        </div>
+        <div class="ans-choice">
+          <p>The other choices were:</p>
+          <div class="table">
+            <div class="row">
+              {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+              {% if species != question.answer %}
+              <div class="col"><img src="{{ thumb }}"></div>
+              <div class="col"><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a></div>
+              {% endif %}
+              {% endfor %}
+              <div class="col"><form method="post" action = "/next">
+                  <button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button></div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col"><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a></div>
     </div>
-    {% endif %}
-    {% endfor %}
-  </div>
-</div>
-<div class="answertext">
-  <p>The answer was:</p>
-  <p class="answer"><a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a></p>
-
-  <p> <i>{{ question.text }} </i> </p>
-
-  <form method="post" action = "/next">
-
-    <button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
-  </form>
-</div>
-
 </div>
 
 {% include 'footer.html' %}
 </body>
+</html>
