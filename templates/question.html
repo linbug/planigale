@@ -27,7 +27,7 @@
             </div>
 
             <div class=questionbox>
-              <form  action="/answer#Answer" method="post">
+              <form  action="/answer" method="post">
                 {% for species in question.species %}
                 <div class=inputrow>
                     <input type="radio" name="choice" value={{loop.index0}} default>

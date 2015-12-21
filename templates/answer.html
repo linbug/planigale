@@ -22,7 +22,7 @@
                                 <h3>The answer was..</h3>
                             </div>
                             <div class="ans-pic">
-                                <img src={{question.picture}}>
+                                <img class = "ans-img" src={{question.picture}}>
                             </div>
                             <div class="ans-name">
                                 <a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a>
@@ -36,7 +36,7 @@
                                     {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
                                     {% if species != question.answer %}
                                       <div class="row">
-                                        <div class="cell"><img src={{thumb}}></div>
+                                        <div class="cell"><img class = thumb src={{thumb}}></div>
                                         <div class="cell"><b><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a></b> </div>
                                         </div>
 
