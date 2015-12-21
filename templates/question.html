@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<head>
-
-    <link rel="stylesheet" href="static/style.css"/>
-
-</head>
+{%include 'head.html' %}
 
 
 <body>
@@ -12,11 +8,11 @@
     {% import 'macro.html' as macros %}
     <section class=container>
       <div class=content>
-        <p> Question {{ question_num }} of {{ total_questions }}</p>
+        <h2 class=question> Question {{ question_num }} of {{ total_questions }}</h2>
 
-        <h2 class=question>
-          Which species is in the picture?
-        </h2>
+
+        <p>  Which species is in the picture?
+        </p>
 
         <div class=questioncontainer>
 
@@ -42,14 +38,7 @@
                 </div>
               </form>
 
-                    <p> You have {{hints_remaining}} hints remaining </p>
-            {% if hints_remaining>0 %}
-            <form  method="post" action = "/question#Buttons">
-                <div class=buttoncontainer>
-                    <button type="submit" name = "hint" value = True > Give me a hint! </button>
-                </div>
-                </form>
-            {% endif %}
+
 
             </div>
 
@@ -58,6 +47,15 @@
 
 
         </div>
+
+        <p> You have {{hints_remaining}} hints remaining </p>
+            {% if hints_remaining>0 %}
+            <form  method="post" action = "/question#Buttons">
+                <div class=buttoncontainer>
+                    <button type="submit" name = "hint" value = True > Give me a hint! </button>
+                </div>
+                </form>
+            {% endif %}
 
         {% with messages = get_flashed_messages() %}
                 {% if messages %}
