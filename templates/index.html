@@ -1,70 +1,63 @@
 
-
 <!DOCTYPE html>
-
 
 <head>
 
-<title>{{title}}</title>
-
- <link rel="shortcut icon" href="https://en.wikipedia.org/wiki/Narrow-nosed_planigale#/media/File:Planigale_tenuirostris.jpg">
-<link rel="stylesheet" href="static/style.css"/>
-<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/style.css"/>
 
 </head>
-<body >
-{% include 'header.html' %}
-{% include 'swag.html' %}
 
+<body>
+  <article>
+     {% include 'header.html' %}
+     {% import 'macro.html' as macros %}
 
+     <section class=container>
+      <div class=content>
+        <div>
 
-<div class = main>
+          <h2> Planigale challenges you to match the picture of the species with its Latin name.</h2>
+          <div class=newgame>
+            <h2 class=newgameheader> Play a game of Planigale!
+            </h2>
+            <form action="/newgame" method="post">
+                <div class=forminputs>
+                  <div class=numquestions>
+                    <h3> Number of questions </h3>
+                    <input type="text" name="num_questions" value="3">
+                </div>
+                <div class=difficulty>
+                    <h3>
+                      Difficulty
+                  </h3>
+                  <div class = inputrow>
+                      <input type="radio" name="difficulty" value="easy">
+                      <p class=forminput>Easy (unlimited hints!)</p>
+                  </div>
+                  <br>
+                  <div class = inputrow>
+                      <input type="radio" name="difficulty" value="medium">
+                      <p class=forminput>Medium (limited hints!)</p>
+                  </div>
+                  <br>
+                  <div class = inputrow>
+                      <input type="radio" name="difficulty" value="hard">
+                      <p class=forminput>Hard (hints be damned!)</p>
+                  </div>
+                  <br>
+              </div>
 
-  <h2> Planigale is a matching game based on the Encyclopedia of Life. </h2>
+          </div>
 
-  <div id='Intro'>
+      <div class=buttoncontainer>
 
-    <p> All organisms that have been discovered by science have been given a Latin name. These names follow a formal naming system first popularised by the Swedish botanist Carl Linnaeus called <a href='https://en.wikipedia.org/wiki/Binomial_nomenclature'>binomial nomenclature</a>: the first word relates to the organism's <a href = 'https://en.wikipedia.org/wiki/Genus'>genus</a> grouping, and the second name to the <a href = https://en.wikipedia.org/wiki/Species>species</a> grouping. The information in the brackets that comes afterwards relates the the person that first described that organism, and in what year.</p>
+          <button type="submit" value="Play Planigale">Go!</button>
+      </div>
+</form>
 
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Planigale_tenuirostris.jpg"> </img>
+  </div>
+</section>
 
-    <div id="wrapper">
-        <div class="square1">Genus</div>
-        <div class="square1">Species</div>
-        <div class="square1">Something else</div>
-        <div class="square1">Something else</div>
-    </div>
- </div>
-
-    <!-- <h3><i>Planigale tenuirostris</i> (Troughton, 1928)</h3> -->
-
-<div id="instructions">
-
-    <h2> Instructions</h2>
-    <p> Match the picture of the organism to its Latin binomial name to gain points and glory! Hints will show you the species' common name. </p>
-
-</div>
-
-<div id="newgame">
-  <form action="/newgame" method="post">
-    <h2> Play a game of planigale! </h2>
-    How many questions?
-    <input type="text" name="num_questions" value="3" >  <br>
-    <br>
-    How difficult can you handle?
-    <br>
-    <input type= "radio" name="difficulty" value = "easy">Easy (unlimited hints!) <br>
-    <input type= "radio" name="difficulty" value = "medium">Medium (limited hints!)<br>
-    <input type= "radio" name="difficulty" value = "hard">Hard (hints be damned!)<br>
-
-    <br>
-    <button type="submit" value="Play Planigale">Go!</button>
-  </form>
-</div>
-
-</div>
-<div class='push'></div>
-{% include 'footer.html' %}
-
+<footer>footer</footer>
+</article>
 </body>

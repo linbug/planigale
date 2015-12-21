@@ -1,70 +1,70 @@
-
-
 <!DOCTYPE html>
-
 <head>
 
-    <title>{{title}}</title>
-
-    <link rel="shortcut icon" href="happy.jpg">
     <link rel="stylesheet" href="static/style.css"/>
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
 
 </head>
 
-<body >
-    <div class='pagewrapper'>
 
-        {% include 'header.html' %}
-        {% import 'macro.html' as macros %}
+<body>
+  <article>
+    {% include 'header.html' %}
+    {% import 'macro.html' as macros %}
+    <section class=container>
+      <div class=content>
+        <p> Question {{ question_num }} of {{ total_questions }}</p>
 
-        <div class = main_wider>
+        <h2 class=question>
+          Which species is in the picture?
+        </h2>
 
-            <div class = qnbox>
+        <div class=questioncontainer>
 
-                <img src = {{question.picture}}>
+          <div class=forminputs>
+            <div class=questionbox>
+              <img class=questionpic src="http://ocean.si.edu/sites/default/files/styles/colorbox_full/public/photos/5a%20-%20Hippocampus%20guttulatus%20-%201000px.jpg?itok=3iHYQFVH">
 
             </div>
 
-            <div class=answerbox>
-                <hr>
-                <p> Question {{ question_num }} of {{ total_questions }}</p>
-                <p> What species is in the picture? </p>
-
-                <form  action="/answer#Answer" method="post">
-                    {% for species in question.species %}
+            <div class=questionbox>
+              <form  action="/answer#Answer" method="post">
+                {% for species in question.species %}
+                <div class=inputrow>
                     <input type="radio" name="choice" value={{loop.index0}} default>
                     {{macros.italicise_names(species, hint=hint)}}
-                    <br>
+                </div>
+                <br>
                     {% endfor %}
-                    {% if hint == True %}
+
+                <div class=buttoncontainer>
+
+                  <button name = "submit" type="submit" value="0" >Submit!</button>
+                </div>
+              </form>
+
                     <p> You have {{hints_remaining}} hints remaining </p>
-                    {% endif %}
-                    <br>
-                    <button name = "submit" type="submit" value="0" > Submit! </button>
+
+            <form  method="post" action = "/question#Buttons">
+                    <button type="submit" name = "hint" value = True > Give me a hint! </button>
                 </form>
 
-                <br>
-                <hr>
-                <br>
-                <form  method="post" action = "/question#Buttons">
-                    <button type="submit" name = "hint" value = True > It's too hard! Give me a hint! </button>
-                </form>
+            </div>
 
-                <a name="Buttons"></a>
+          </div>
 
-                {% with messages = get_flashed_messages() %}
+
+
+        </div>
+
+        {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 {% for message in messages %}
                 <p>{{ message }}</p>
                 {% endfor %}
                 {% endif %}
                 {% endwith %}
-            </div>
-        </div>
-    </div>
 
-    <div class='push'></div>
-
-    {% include 'footer.html' %}
+    </section>
+    <footer>footer</footer>
+  </article>
 </body>

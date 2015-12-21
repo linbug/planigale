@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<head>
+
+    <link rel="stylesheet" href="static/style.css"/>
+
+</head>
+
+
+<body>
+  <article>
+    {% include 'header.html' %}
+    {% import 'macro.html' as macros %}
+
+    <section class=container>
+      <div class=About>
+        <div>
+        <h2>What is Planigale?</h2>
+        <p class=intro> Planigale is a matching game using species from the Encyclopedia of Life. Planigale challenges you to match the picture of the species with its Latin name.
+          <div>
+          <h2> Latin name? </h2>
+          <p class=intro>
+            All organisms that have been discovered by science have been given a Latin name. These names follow a formal naming system first popularised by the Swedish botanist Carl Linnaeus called <a href='https://en.wikipedia.org/wiki/Binomial_nomenclature'>binomial nomenclature</a>:
+          the first word relates to the organism's <a href='https://en.wikipedia.org/wiki/Genus'>genus</a> grouping, and the second name to the <a href=https://en.wikipedia.org/wiki/Species>species</a> grouping. The information in the brackets that comes
+          afterwards relates the the person that first described that organism, and in what year. </p>
+        </div>
+        </div>
+        <div class= imgcontainer>
+          <img src=https://www.vanaqua.org/files/2513/1723/4688/revit-octopus.jpg class=centerpic>
+        </div>
+        <div class = "explanation">
+          <div class = box><p>Genus</p></div>
+          <div class = box><p>Species</p></div>
+          <div class = box><p>Described by</p></div>
+          <div class = box><p>Year</p></div>
+        </div>
+      <div>
+      <h2> Who made this? </h2>
+      <p class=intro> Planigale was a collaborative effort between <a href="http://linbug.github.io">Lin Taylor</a> and <a href = ???>Dave Anderson</a> at the <a href = https://www.recurse.com/>Recurse Center</a></div> </p>
+    </section>
+
+    <footer>footer</footer>
+  </article>
+</body>
