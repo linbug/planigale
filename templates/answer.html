@@ -43,15 +43,17 @@
                                         {% endif %}
                                       {% endfor %}
                                     <div class=buttoncontainer>
-                                        <button>Next Question</button>
+                                        <form method="post" action = "/next">
+
+<button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
+</form>
                                     </div>
                                 </section>
                             </div>
                             <section class="ans-description">
                                 <div class="ans-text">
                                     <p>
-                                        The Pacific seahorse (Hippocampus ingens) is a species of fish in the Syngnathidae family. It is found in Colombia, Costa Rica, Ecuador, El Salvador, Guatemala, Mexico, Panama, Peru, and the United States. Its natural habitat is coral reefs. It is threatened
-                                        by habitat loss. The genus name is derived from the Greek.
+                                    {{ question.text }}
                                     </p>
                                 </div>
                             </section>
