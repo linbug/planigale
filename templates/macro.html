@@ -1,5 +1,5 @@
 {% macro italicise_names (species, hint=True) %}
-<p><i>{{' '.join(species.scientific_name.split()[:2])}}</i>
+<p class=forminput><i>{{' '.join(species.scientific_name.split()[:2])}}</i>
 {{'(' ~ ' '.join(species.scientific_name.replace('(', '').replace(')', '').split()[2:]) ~ ')'}}</p>
-{% if hint %}<p> - <b> {{  species.common_name }} </b></p>{% endif %}
+{% if hint %}<p class=forminput> - <b> {{  species.common_name }} </b></p>{% endif %}
 {% endmacro %}

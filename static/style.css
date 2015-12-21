@@ -30,6 +30,7 @@ h3{
 
 p {
    text-align:center;
+   margin:0;
 }
 
 .intro{
@@ -39,7 +40,7 @@ p {
 
 .forminput{
   text-align:left;
-  margin:0;
+  flex:1;
 }
 
 header {
@@ -49,7 +50,7 @@ header {
 section {
   flex: 1;
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 700px;
   border: 1px solid grey;
 }
 
@@ -73,7 +74,7 @@ img.centerpic {
 
 .questionpic{
   max-height:300px;
-
+  max-width:100%;
 }
 
 .explanation{
@@ -84,8 +85,8 @@ img.centerpic {
   flex:1;
   margin:5px;
   background-color:skyblue;
-  width:50px;
-  height:50px;
+  /*width:50px;*/
+  /*height:50px;*/
   align-items: center;
   justify-content: center;
 }
@@ -94,12 +95,12 @@ img.centerpic {
   text-align:center;
 }
 
-div.About {
+/*div.About {
   margin:50px auto;
   background-color: red;
   display: flex;
   flex-direction: column;
-}
+}*/
 
 .imgcontainer {
   max-width: 100%;
@@ -153,7 +154,7 @@ div.About {
 .inputrow{
   display:flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
 
 }
 
@@ -170,6 +171,7 @@ div.About {
   flex-direction:column;
   align-items: center;
   justify-content: center;
+  flex:1;
 }
 
 .difficulty{

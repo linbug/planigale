@@ -22,7 +22,7 @@
 
           <div class=forminputs>
             <div class=questionbox>
-              <img class=questionpic src="http://ocean.si.edu/sites/default/files/styles/colorbox_full/public/photos/5a%20-%20Hippocampus%20guttulatus%20-%201000px.jpg?itok=3iHYQFVH">
+              <img class=questionpic src={{question.picture}}>
 
             </div>
 
@@ -43,10 +43,13 @@
               </form>
 
                     <p> You have {{hints_remaining}} hints remaining </p>
-
+            {% if hints_remaining>0 %}
             <form  method="post" action = "/question#Buttons">
+                <div class=buttoncontainer>
                     <button type="submit" name = "hint" value = True > Give me a hint! </button>
+                </div>
                 </form>
+            {% endif %}
 
             </div>
 
