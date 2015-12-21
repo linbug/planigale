@@ -1,45 +1,65 @@
 <!DOCTYPE html>
-
 <head>
 
-<title>{{title}}</title>
-
- <link rel="shortcut icon" href="happy.jpg">
-<link rel="stylesheet" href="static/style.css"/>
-<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="static/style.css"/>
 
 </head>
 
-<body >
+<body>
+    <article>
+        {% include 'header.html' %}
+        {% import 'macro.html' as macros %}
+        <section class="container">
+            <div class=content>
+                <article class="answer">
 
-{% include 'header.html' %}
-{% import 'macro.html' as macros %}
+                    <div class="ans-verification">
+                        <h2>You were {{validation}}!</h2>
+                    </div>
+                    <div class="ans-choices">
+                        <section class="ans-correct">
+                            <div class="ans-lead">
+                                <h3>The answer was..</h3>
+                            </div>
+                            <div class="ans-pic">
+                                <img src={{question.picture}}>
+                            </div>
+                            <div class="ans-name">
+                                <a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a>
+                                </div>
+                            </section>
+                            <section class="ans-others">
+                                <div class="ans-others-lead">
+                                    <h3>Your other choices were: </h4>
+                                </div>
+                                <div class="ans-others-list">
+                                    {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+                                    {% if species != question.answer %}
+                                      <div class="row">
+                                        <div class="cell"><img src={{thumb}}></div>
+                                        <div class="cell"><b><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a></b> </div>
+                                        </div>
 
-<div class = main>
+                                        {% endif %}
+                                      {% endfor %}
+                                    <div class=buttoncontainer>
+                                        <button>Next Question</button>
+                                    </div>
+                                </section>
+                            </div>
+                            <section class="ans-description">
+                                <div class="ans-text">
+                                    <p>
+                                        The Pacific seahorse (Hippocampus ingens) is a species of fish in the Syngnathidae family. It is found in Colombia, Costa Rica, Ecuador, El Salvador, Guatemala, Mexico, Panama, Peru, and the United States. Its natural habitat is coral reefs. It is threatened
+                                        by habitat loss. The genus name is derived from the Greek.
+                                    </p>
+                                </div>
+                            </section>
 
-<img src = {{question.picture}}>
+                        </article>
+                    </div>
+                </section>
 
-<hr>
-<p> Your guess was {{validation}}! The answer was <a href="{{ question.answer.web_url}}" target="_blank">{{ macros.italicise_names(question.answer) }}</a>.</p>
-
-<p> <i>{{ question.text }} </i> </p>
-
-<p> Your other choices were: </p>
-
-<ul>
-  {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
-  {% if species != question.answer %}
-  <li><img src="{{ thumb }}"><b><a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a>.</b> </li>
-  {% endif %}
-  {% endfor %}
-</ul>
-
-<form method="post" action = "/next">
-
-<button type="submit" > {%if question_num == total_questions%} Get your score! {%else%} Next question {%endif%} </button>
-</form>
-
-</div>
-
-{% include 'footer.html' %}
-</body>
+                <footer>footer</footer>
+            </article>
+        </body>

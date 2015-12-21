@@ -23,9 +23,14 @@ h2{
 }
 
 h3{
-  text-align: center
+  text-align: center;
+  margin: 5px auto;
 }
 
+a.ans{
+    flex:1;
+
+}
 
 
 p {
@@ -94,13 +99,6 @@ img.centerpic {
 .question{
   text-align:center;
 }
-
-/*div.About {
-  margin:50px auto;
-  background-color: red;
-  display: flex;
-  flex-direction: column;
-}*/
 
 .imgcontainer {
   max-width: 100%;
@@ -178,6 +176,89 @@ img.centerpic {
   border: 1px solid black;
   margin: 0 0 0 10px;
   padding:10px;
+}
+
+.ans-verification {
+  text-align: center;
+}
+
+.ans-correct {
+  width: 50%;
+}
+
+.ans-lead {
+  text-align: center;
+}
+
+.ans-others-lead {
+  text-align: center;
+}
+
+.ans-pic {
+  text-align: center;
+  /*padding: 1em;*/
+  margin: 10px;
+}
+
+.ans-pic img {
+  max-width: 100%;
+  max-height: 300px;
+  margin: 0 auto;
+}
+
+.ans-name{
+ display:flex;
+ justify-content: center;
+ text-align: center;
+ margin:10px;
+}
+
+.ans-choices {
+  display: flex;
+  flex-direction: row;
+}
+
+.ans-others {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.row {
+  flex:1;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.cell {
+  padding: 1em;
+  flex: 1;
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell img {
+  max-width: 100%;
+  max-height: 300px;
+}
+
+.ans-others-list {
+  flex: 1;
+  display:flex;
+  flex-direction:column;
+}
+
+.ans-text {
+  padding: 1em;
+}
+
+.ans-text p {
+  text-indent: 2em;
+  font-style: italic;
 }
 
 ul{
