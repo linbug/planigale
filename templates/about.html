@@ -4,6 +4,7 @@
 
 
 <body>
+
   <article>
     {% include 'header.html' %}
     {% import 'macro.html' as macros %}
@@ -23,13 +24,37 @@
         </div>
         </div>
         <div class= imgcontainer>
-          <img src=https://www.vanaqua.org/files/2513/1723/4688/revit-octopus.jpg class=centerpic>
+          <img src=http://media.eol.org/content/2011/10/06/00/54308_orig.jpg class=centerpic>
         </div>
-        <div class = "explanation">
-          <div class = box><p>Genus</p></div>
+        <div class = "explanation" >
+            <div class="flipper">
+              <div class="card">
+                <figure class="front"><p>Genus</p></figure>
+                <figure class="back"><p>Amphioctopus</p></figure>
+              </div>
+            </div>
+            <div class="flipper">
+              <div class="card">
+                <figure class="front"><p class=taxonname>Species</p></figure>
+                <figure class="back"><p>marginatus</p></figure>
+              </div>
+            </div>
+            <div class="flipper">
+              <div class="card">
+                <figure class="front"><p>Described by</p></figure>
+                <figure class="back"><p>(Taki, </figure>
+              </div>
+            </div>
+            <div class="flipper">
+              <div class="card">
+                <figure class="front"><p>Year</p></figure>
+                <figure class="back">1964)</figure>
+              </div>
+            </div>
+          <!-- <div class = box><p>Genus</p></div>
           <div class = box><p>Species</p></div>
           <div class = box><p>Described by</p></div>
-          <div class = box><p>Year</p></div>
+          <div class = box><p>Year</p></div> -->
         </div>
       <div>
       <h2> Who made this? </h2>

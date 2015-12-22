@@ -25,7 +25,7 @@
         </div>
         {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
         <div class="sum-quest-ans">
-            <div class="{% if species == question.answer %}answer {% endif %}row">
+            <div class="{% if species == question.answer %} answer {% endif %}row">
               <div class="thumb cell">
                 <img src={{thumb}}>
               </div>
@@ -37,16 +37,17 @@
                 {% if species == question.guess %}
                     {% if question.guess == question.answer %}
 
-                <i class = "fa fa-check"></i>
+                <i class = "fa fa-check fa-2x" background= green ></i>
 
 
                 {% else %}
-                <i class = "fa fa-times"></i>
+                <i class = "fa fa-times fa-2x"></i>
                 {% endif %}
                 {% endif %}
               </div>
             </div>
         </div>
+
 
 
 
@@ -56,9 +57,13 @@
             </div>
         {% endfor %}
 
+
         </div>
+
     </div>
+
         </section>
+
     </article>
 
 </body>
