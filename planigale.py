@@ -116,6 +116,15 @@ class Species(object):
         self.thumbs_list = thumbs_list
         self.web_url = web_url
 
+    def to_json(self):
+        return json.dumps(self.__dict__)
+
+    @classmethod
+    def from_json(cls, json_str):
+        json_dict = json.loads(json_str)
+        return cls(**json_dict)
+
+
     def show_image(self):
         response = urlopen(random.choice(self.images_list))
         img = Image.open(BytesIO(response.read()))
@@ -194,7 +203,6 @@ class Species(object):
 class PlanigaleConsole(object):
     def __init__(self, data, total_questions=3, hints=0):
         self.game = PlanigaleGame(data, total_questions=3, hints=0)
-        self.play(self.game)
 
     def play(self, game):
         for question_num, question in enumerate(self.game.questions, start=1):
@@ -267,3 +275,4 @@ class PlanigaleConsole(object):
 if __name__ == '__main__':
     data = Planigale.load_species()
     game = PlanigaleConsole(data)
+    #game.play()

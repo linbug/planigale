@@ -1,1 +1,1 @@
-web: python planigale_flask.py
+web: gunicorn planigale_flask:app 

@@ -1,3 +1,11 @@
+# Planigale files
+.env
+.log
+
+# others
+.fuse*
+*~
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
