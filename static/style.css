@@ -45,10 +45,6 @@ a.ans{
 
 }
 
-
-
-
-
 form{
 
     background-color:inherit;
@@ -149,6 +145,7 @@ div {
   flex-direction:column;
   margin: 20px;
   padding:10px;
+  border-radius: 10px;
 
 }
 
@@ -272,8 +269,13 @@ div {
   display: flex;
   flex-direction: row;
   border-bottom: 2px solid #BECFD8;
-  margin:2em 0 ;
+  margin:1em 0 ;
   padding: 0 0 2em 0;
+}
+
+.ans-description{
+
+    text-align:center;
 }
 
 .ans-others {
