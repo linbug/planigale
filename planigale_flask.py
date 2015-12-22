@@ -102,7 +102,7 @@ def answer():
     guess_species = game.curr_question.species[choice]
     game.score_question(game.curr_question, guess_species)
 
-    validation = "Correct" if game.curr_question.correct else "Incorrect"
+    validation = "correct" if game.curr_question.correct else "incorrect"
 
 
     return render_template('answer.html',

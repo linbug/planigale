@@ -16,7 +16,7 @@
 
         <div class=questioncontainer>
 
-          <div class=forminputs>
+          <div class=forminputs id=question>
             <div class=questionbox>
               <img class=questionpic src={{question.picture}}>
 
@@ -36,6 +36,14 @@
 
                   <button name = "submit" type="submit" value="0" >Submit!</button>
                 </div>
+                <br>
+                 {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <p>{{ message }}</p>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
               </form>
 
 
@@ -47,7 +55,7 @@
 
 
         </div>
-        <hr>
+
 
         <p> You have {{hints_remaining}} hints remaining </p>
             {% if hints_remaining>0 %}
@@ -58,16 +66,10 @@
                 </form>
             {% endif %}
 
-        {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                <p>{{ message }}</p>
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
+
 
     </section>
-    <hr>
-    <footer>footer</footer>
+
+    {% include 'footer.html' %}
   </article>
 </body>

@@ -32,7 +32,7 @@ h3{
 }
 
 a{
-    color:black;
+    color:#772E59;
     text-decoration: none;
 }
 
@@ -45,9 +45,8 @@ a.ans{
 
 }
 
-hr{
-   border-top: 1px solid #8c8b8b;
-     }
+
+
 
 
 form{
@@ -80,7 +79,6 @@ section {
   flex: 1;
   margin: 0 auto;
   max-width: 700px;
-  /*border: 1px solid grey;*/
 }
 
 .container {
@@ -155,8 +153,6 @@ div {
 }
 
 .forminputs{
-  border-top: 2px solid #BECFD8;
-
   display:flex;
   flex-direction:row;
   justify-content: center;
@@ -165,7 +161,8 @@ div {
 }
 
 #question{
-
+    border-bottom: 2px solid #BECFD8;
+    margin: 0 0 2em 0;
 
 }
 
@@ -274,6 +271,9 @@ div {
 .ans-choices {
   display: flex;
   flex-direction: row;
+  border-bottom: 2px solid #BECFD8;
+  margin:2em 0 ;
+  padding: 0 0 2em 0;
 }
 
 .ans-others {
@@ -334,9 +334,10 @@ div {
 }
 
 .sum-question{
-border-top: 2px solid #BECFD8;
+/*border-top: 2px solid #BECFD8;*/
   border-bottom: 2px solid #BECFD8;
-    margin:50px 0 ;
+    bottom-margin:10%;
+    padding:8% 5% 8% 5% ;
 }
 
 .sum-quest-lead {
@@ -345,7 +346,7 @@ border-top: 2px solid #BECFD8;
 
 .something{
 
-    width:400px;
+    width:600px;
 }
 
 .answer{
@@ -355,7 +356,7 @@ border-top: 2px solid #BECFD8;
 
 .questionform{
     font-family:Quicksand;
-    font-size: 20px;
+    font-size: 15px;
     width: 50px;
 }
 
@@ -456,6 +457,7 @@ display:flex;
 li{
   flex:1;
 margin:10px 0;
+font-weight: bold;
 }
 
 button {
@@ -482,5 +484,11 @@ input{
 }
 
 footer {
+
+  height:3em;
+  font-size: 10px;
   background-color: #BECFD8;
+  display: flex;
+justify-content: center;
+  align-items: center;
 }
