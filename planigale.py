@@ -5,6 +5,7 @@ import random
 from PIL import Image
 import os
 import pickle
+import jsonpickle
 import re
 
 class Planigale(object):
@@ -58,16 +59,60 @@ class Planigale(object):
             species = Planigale.fetch_species(pickle_file=pickle_file, num_species=num_species)
         return species
 
+    @staticmethod
+    def load_species_from_json(json_file='species.json'):
+        try:
+            with open(json_file, 'r') as f:
+                json_text = f.read()
+                species = jsonpickle.decode(json_text)
+        except Exception as ex:
+            print("Exception: {}".format(ex))
+        return species
+
+
 
 class PlanigaleGame(object):
-    def __init__(self, species_data, total_questions=3, hints=0):
-        self.score = 0
+    def __init__(self,
+                 species_data=None,
+                 total_questions=3,
+                 hints=0,
+                 score=0,
+                 hints_remaining=None,
+                 questions=None,
+                 question_num=1,
+                 curr_question=None):
+
+        self.score = score
         self.num_hints = hints
-        self.hints_remaining = self.num_hints
+
+        if hints_remaining is None:
+            self.hints_remaining = self.num_hints
+        else:
+            self.hints_remaining = hints_remaining
+
         self.total_questions = total_questions
-        self.questions = [Question(species_data) for i in range(self.total_questions)]
-        self.question_num = 1
-        self.curr_question = self.questions[0]
+
+        if questions is None:
+            self.questions = [Question(species_data) for i in range(self.total_questions)]
+        else:
+            self.questions = []
+            for q in questions:
+                if isinstance(q, dict):
+                    q.pop('py/object')
+                    self.questions.append(Question(**q))
+                else:
+                    self.questions = questions
+
+        self.question_num = question_num
+
+        if curr_question is None:
+            self.curr_question = self.questions[0]
+        else:
+            if isinstance(curr_question, dict):
+                curr_question.pop('py/object')
+                self.curr_question = Question(**curr_question)
+            else:
+                self.curr_question = curr_question
 
     def score_question(self, question, guess_species, hints=0):
         if question.verify(guess_species):
@@ -84,15 +129,73 @@ class PlanigaleGame(object):
 
 
 class Question(object):
-    def __init__(self, species_data):
-        self.species = random.sample(species_data,3)
-        self.species_picture, self.species_thumb = list(zip(*[random.choice(list(zip(s.images_list, s.thumbs_list))) for s in self.species if s.images_list is not None]))
-        self.species_text = [random.choice(s.text_list) for s in self.species if s.text_list is not None]
-        self.answer, self.picture, self.thumb, self.text = random.choice(
-            list(zip(self.species, self.species_picture, self.species_thumb, self.species_text)))
-        self.revealed_hint = False
-        self.guess = None
-        self.correct = None
+    def __init__(self,
+                 species_data=None,
+                 species=None,
+                 species_picture=None,
+                 species_thumb=None,
+                 species_text=None,
+                 answer=None,
+                 picture=None,
+                 thumb=None,
+                 text=None,
+                 revealed_hint=False,
+                 guess=None,
+                 correct=None):
+        """Good luck!!!! - Me in the past."""
+        if species is None:
+            self.species = random.sample(species_data,3)
+        else:
+            if type(species[0]) == type({}):
+                self.species = []
+                for s in species:
+                    if isinstance(s, dict):
+                        s.pop('py/object')
+                        self.species.append(Species(**s))
+                    else:
+                        self.species.append(s)
+            else:
+                self.species = species
+
+
+        if species_picture is None or species_thumb is None:
+            self.species_picture, self.species_thumb = list(zip(*[random.choice(list(zip(s.images_list, s.thumbs_list))) for s in self.species if s.images_list is not None]))
+        else:
+            self.species_picture = species_picture
+            self.species_thumb = species_thumb
+
+        if species_text is None:
+            self.species_text = [random.choice(s.text_list) for s in self.species if s.text_list is not None]
+        else:
+            self.species_text = species_text
+
+        if answer is None or picture is None or thumb is None or text is None:
+            self.answer, self.picture, self.thumb, self.text = random.choice(
+                list(zip(self.species, self.species_picture, self.species_thumb, self.species_text)))
+        else:
+            if isinstance(answer, dict):
+                answer.pop('py/object')
+                self.answer = Species(**answer)
+            else:
+                self.answer = answer
+            self.picture = picture
+            self.thumb = thumb
+            self.text = text
+
+
+        self.revealed_hint = revealed_hint
+
+        if guess is None:
+            self.guess = None
+        else:
+            if type(guess) == type({}):
+                guess.pop('py/object')
+                self.guess = Species(**guess)
+            else:
+                self.guess = guess
+
+
+        self.correct = correct
 
     def verify(self, guess_species):
         if self.guess == None:
@@ -108,7 +211,13 @@ class Species(object):
     '''Creates a new species object that stores scientific name, common name and images\
     from an eol page '''
 
-    def __init__(self, scientific_name, common_name, text_list, images_list, thumbs_list, web_url):
+    def __init__(self,
+                 scientific_name='Plangale',
+                 common_name='Planigale!',
+                 text_list=['Its a planigale.'],
+                 images_list=['This is a picture of a planigale.'],
+                 thumbs_list=['This is a thumbail of a planigale.'],
+                 web_url='http://eol.org'):
         self.scientific_name = scientific_name
         self.common_name = common_name
         self.text_list = text_list
@@ -273,6 +382,7 @@ class PlanigaleConsole(object):
 
 
 if __name__ == '__main__':
-    data = Planigale.load_species()
+    # data = Planigale.load_species()
+    data = Planigale.load_species_from_json()
     game = PlanigaleConsole(data)
     #game.play()

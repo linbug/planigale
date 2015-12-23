@@ -1,15 +1,16 @@
 from flask import Flask, flash, render_template, request, redirect, session, url_for, g
 import logging
 from logging.handlers import RotatingFileHandler
-from planigale import Question, Planigale, PlanigaleGame, PlanigaleConsole
+from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 from uuid import uuid4
 import redis
 import pickle
+import jsonpickle
 
 app = Flask(__name__)
 app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
-handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=10)
 # handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 app.logger.error("Starting server.")
@@ -26,6 +27,28 @@ def get_value(redis, key):
     if pickled_value is None:
         return None
     return pickle.loads(pickled_value)
+
+def set_game(game):
+    app.logger.error("Setting game in session: {}".format(game))
+    if game is not None:
+        session['game'] = jsonpickle.encode(game)
+
+def get_game():
+    if 'game' in session:
+        json_text = session['game']
+        app.logger.error("Game JSON: {}".format(json_text))
+
+        game_data = jsonpickle.decode(json_text)
+
+        if isinstance(game_data, dict):
+            game_data.pop('py/object')
+            game = Planigale(**game_data)
+        else:
+            game = game_data
+        return game
+    else:
+        app.logger.error("Game not in session")
+        return None
 
 def get_new_session():
     app.logger.error("Getting new session..")
@@ -50,26 +73,42 @@ def get_species_data():
         # with open(path, 'rb') as f:
         #     app.logger.error("Loading file: {}".format(f))
         #     data = g._species_data = pickle.load(f)
-        data = g._species_data = Planigale.load_species(path)
 
-    app.logger.error("Loaded {} species.".format(len(data)))
+        # data = g._species_data = Planigale.load_species(path)
+        data = g._species_data = Planigale.load_species_from_json()
 
+    # app.logger.error("Loaded {} species.".format(len(data)))
+    # app.logger.error("type(data[0]):{}".format(type(data[0])))
+    # app.logger.error("dir(data[0]):{}".format(dir(data[0])))
+    # app.logger.error("data[0].keys():{}".format(data[0].keys()))
+    # app.logger.error("data[0]['py/object']:{}".format(data[0]['py/object']))
 
-    return data
+    species = []
+    for item in data:
+        if isinstance(item, dict):
+            item.pop('py/object')
+            species.append(Species(**item))
+        else:
+            species.append(item)
+
+    app.logger.error("Species: {}".format(species[0]))
+    return species
+    # return data
 
 
 @app.before_request
 def before():
     app.logger.error("Running before()")
     # get redis connection, set it to the g variable
-    redis_url=os.getenv('REDIS_URL')
-    app.logger.error("Getting connection pool for redis sever: {}".format(redis_url))
-    g._redis = redis.from_url(redis_url)
+    # redis_url=os.getenv('REDIS_URL')
+    # app.logger.error("Getting connection pool for redis sever: {}".format(redis_url))
+    # g._redis = redis.from_url(redis_url)
 
     # get the request ID if it doesn't exist
     g._sid = get_session_id()
     # get the game and set it to the g variable
-    g._game = get_value(g._redis, g._sid)
+    # g._game = get_value(g._redis, g._sid)
+    g._game = get_game()
 
     app.logger.error("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
 
@@ -79,7 +118,10 @@ def before():
 def after(response):
     app.logger.error("Starting after()")
     # set the game from the g variable to redis
-    set_value(g._redis, g._sid, g._game)
+    # set_value(g._redis, g._sid, g._game)
+    app.logger.error("Game: {}".format(g._game))
+    set_game(g._game)
+    app.logger.error("Game in session: {}".format(session.get('game','Not set')))
     app.logger.error("Finished after()")
 
     return response
@@ -95,21 +137,21 @@ def get_session_id():
     return session['id']
 
 
-def get_game():
-    app.logger.error("Getting game")
-    id = get_session_id()
+# def get_game():
+#     app.logger.error("Getting game")
+#     id = get_session_id()
 
-    games = getattr(g, '_games', None)
-    if games is None:
-        games = g._games = {}
+#     games = getattr(g, '_games', None)
+#     if games is None:
+#         games = g._games = {}
 
-    if id not in games:
-        games[id] = PlanigaleGame(get_species_data())
-        # forward to question for new game?
-    game = games[id]
+#     if id not in games:
+#         games[id] = PlanigaleGame(get_species_data())
+#         # forward to question for new game?
+#     game = games[id]
 
-    app.logger.error("Game object loaded for session # {}.".format(id))
-    return game
+#     app.logger.error("Game object loaded for session # {}.".format(id))
+#     return game
 
 
 @app.route('/', methods=['GET'])
@@ -136,6 +178,8 @@ def newgame():
         data = get_species_data()
         app.logger.error("Loaded data..")
         g._game = PlanigaleGame(data, total_questions, num_hints)
+        set_game(g._game)
+        app.logger.error("Created game: {}".format(g._game))
 
         return redirect(url_for('question'))
     except Exception as ex:
