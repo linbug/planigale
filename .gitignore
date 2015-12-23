@@ -1,6 +1,6 @@
 # Planigale files
 .env
-.log
+*.log*
 
 # others
 .fuse*

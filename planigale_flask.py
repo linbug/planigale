@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, redirect, session, url_for, g
 import logging
 from logging.handlers import RotatingFileHandler
-from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
+from planigale import Question, Planigale, PlanigaleGame, PlanigaleConsole
 import os
 from uuid import uuid4
 import redis
@@ -9,6 +9,10 @@ import pickle
 
 app = Flask(__name__)
 app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
+handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=1)
+# handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+app.logger.error("Starting server.")
 # redis_url=os.getenv('REDIS_URL')
 # redis = redis.from_url(redis_url)
 # redis.set(name='game', value='planigale',ex=15)
@@ -39,9 +43,14 @@ def get_new_session():
 def get_species_data():
     app.logger.error("Getting species data..")
     data = getattr(g, '_species_data', None)
-    app.logger.error("Current path is: {}.".format(os.getcwd()))
+    path = os.path.join(os.getcwd(),'species.pickle')
+    # app.logger.error("Current path is: {}.".format(path))
+    # app.logger.error("{}: {}".format(path, os.path.isfile(path)))
     if data is None:
-        data = g._species_data = Planigale.load_species()
+        # with open(path, 'rb') as f:
+        #     app.logger.error("Loading file: {}".format(f))
+        #     data = g._species_data = pickle.load(f)
+        data = g._species_data = Planigale.load_species(path)
 
     app.logger.error("Loaded {} species.".format(len(data)))
 
@@ -123,7 +132,10 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        g._game = PlanigaleGame(get_species_data(), total_questions, num_hints)
+        app.logger.error("Loading data..")
+        data = get_species_data()
+        app.logger.error("Loaded data..")
+        g._game = PlanigaleGame(data, total_questions, num_hints)
 
         return redirect(url_for('question'))
     except Exception as ex:
@@ -205,10 +217,6 @@ def summary():
 def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
     return __builtins__.zip(*args, **kwargs)
 
-if __name__ == '__main__':
-    handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=1)
-    # handler.setLevel(logging.INFO)
-    app.logger.addHandler(handler)
-    app.logger.error("It isn't working?")
 
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run()
