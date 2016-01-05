@@ -15,9 +15,9 @@ app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
 
 # configure logging
 handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=10)
-# handler.setLevel(logging.INFO)
+handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
-app.logger.info("Starting server.")
+app.logger.debug("Starting server.")
 
 # def set_pickle_value(redis, key, value):
 #     redis.set(name=key, value=pickle.dumps(value), ex=60*60)
@@ -31,67 +31,67 @@ app.logger.info("Starting server.")
 
 
 # def set_game_session(game):
-#     app.logger.info("Setting game in session: {}".format(game))
+#     app.logger.debug("Setting game in session: {}".format(game))
 #     if game is not None:
 #         session['game'] = game.to_json()
 
 # def get_game_session():
 #     if 'game' in session:
 #         json_text = session['game']
-#         app.logger.info("Game JSON: {}".format(json_text))
+#         app.logger.debug("Game JSON: {}".format(json_text))
 
 #         game = PlanigaleGame.from_json(json_text)
 
 #         return game
 #     else:
-#         app.logger.info("Game not in session")
+#         app.logger.debug("Game not in session")
 #         return None
 
 
 def set_game(game):
-    app.logger.info("Setting game in redis w/ SID ({}).".format(g._sid))
-    app.logger.info("{}".format(game))
+    app.logger.debug("Setting game in redis w/ SID ({}).".format(g._sid))
+    app.logger.debug("{}".format(game))
     if game is not None:
         g._redis.set(name=g._sid, value=game.to_json(), ex=60*60)
 
 
 def get_game():
-    app.logger.info("Getting game in redis w/ SID ({}).".format(g._sid))
+    app.logger.debug("Getting game in redis w/ SID ({}).".format(g._sid))
     json_text = g._redis.get(g._sid)
     game = None
     if json_text is not None:
         game = PlanigaleGame.from_json(json_text.decode("utf-8"))
 
-    app.logger.info("{}".format(game))
+    app.logger.debug("{}".format(game))
 
     return game
 
 
 def get_new_session():
-    app.logger.info("Getting new session..")
+    app.logger.debug("Getting new session..")
     return uuid4()
 
 
 def get_species_data():
-    app.logger.info("Getting species data..")
+    app.logger.debug("Getting species data..")
     data = getattr(g, '_species_data', None)
 
     if data is None:
         species = g._species_data = Planigale.load_species_from_json()
 
-    app.logger.info("Species: {}".format(species[0]))
+    app.logger.debug("Species: {}".format(species[0]))
     return species
 
 
 def get_redis():
     redis_url=os.getenv('REDIS_URL')
-    app.logger.info("Getting connection pool for redis sever: {}".format(redis_url))
+    app.logger.debug("Getting connection pool for redis sever: {}".format(redis_url))
     return redis.from_url(redis_url)
 
 
 @app.before_request
 def before():
-    app.logger.info("Running before()")
+    app.logger.debug("Running before()")
     # get redis connection, set it to the g variable
     g._redis = get_redis()
 
@@ -101,38 +101,38 @@ def before():
     # get the game and set it to the g variable
     g._game = get_game()
 
-    app.logger.info("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
+    app.logger.debug("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
 
 
 @app.after_request
 def after(response):
-    app.logger.info("Starting after()")
+    app.logger.debug("Starting after()")
     # set the game from the g variable to redis
-    app.logger.info("Game: {}".format(g._game))
+    app.logger.debug("Game: {}".format(g._game))
     set_game(g._game)
-    app.logger.info("Finished after()")
+    app.logger.debug("Finished after()")
 
     return response
 
 
 def get_session_id():
-    app.logger.info("Getting session ID")
+    app.logger.debug("Getting session ID")
     if 'id' not in session:
         session['id'] = get_new_session()
 
-    app.logger.info("Session # {} accessed.".format(session['id']))
+    app.logger.debug("Session # {} accessed.".format(session['id']))
     return session['id']
 
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    app.logger.info("Ready to render index..")
+    app.logger.debug("Ready to render index..")
     return render_template('index.html')
 
 @app.route('/newgame', methods = ['POST'])
 def newgame():
-    app.logger.info("Running newgame")
+    app.logger.debug("Running newgame")
     try:
         total_questions = int(request.form["num_questions"])
 
@@ -144,17 +144,17 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        app.logger.info("Loading data..")
+        app.logger.debug("Loading data..")
         data = get_species_data()
-        app.logger.info("Loaded data..")
+        app.logger.debug("Loaded data..")
         g._game = PlanigaleGame(data, total_questions, num_hints)
         set_game(g._game)
-        app.logger.info("Created game: {}".format(g._game))
+        app.logger.debug("Created game: {}".format(g._game))
 
         return redirect(url_for('question'))
     except Exception as ex:
         flash("Error while creating game. Please retry.")
-        app.logger.info("An exception occured while getting newgame: {}".format(ex))
+        app.logger.debug("An exception occured while getting newgame: {}".format(ex))
         return redirect(url_for('index'))
 
 
@@ -192,7 +192,7 @@ def question():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    app.logger.info('Starting answer()..')
+    app.logger.debug('Starting answer()..')
     try:
         choice = int(request.form["choice"])
     except(Exception):
@@ -205,12 +205,12 @@ def answer():
 
     validation = "Correct" if game.curr_question.correct else "Incorrect"
 
-    app.logger.info("In answer: {}".format(game.curr_question))
-    app.logger.info("In answer: {}.".format(game))
+    app.logger.debug("In answer: {}".format(game.curr_question))
+    app.logger.debug("In answer: {}.".format(game))
 
     question = game.curr_question
     choices = zip(question.species, question.species_text, question.species_thumb)
-    app.logger.info("Curr question Types. Species: {}, Text: {}, Thumb: {}.".format(type(question.species), type(question.species_text), type(question.species_thumb)))
+    app.logger.debug("Curr question Types. Species: {}, Text: {}, Thumb: {}.".format(type(question.species), type(question.species_text), type(question.species_thumb)))
 
     return render_template('answer.html',
                            question_num = game.question_num,
