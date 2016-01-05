@@ -64,7 +64,11 @@ class Planigale(object):
         try:
             with open(json_file, 'r') as f:
                 json_text = f.read()
-                species = jsonpickle.decode(json_text)
+                data = json.loads(json_text)
+                species = []
+                for item in data:
+                    species.append(Species(**item))
+
         except Exception as ex:
             print("Exception: {}".format(ex))
         return species
@@ -75,7 +79,7 @@ class PlanigaleGame(object):
     def __init__(self,
                  species_data=None,
                  total_questions=3,
-                 hints=0,
+                 num_hints=0,
                  score=0,
                  hints_remaining=None,
                  questions=None,
@@ -83,7 +87,7 @@ class PlanigaleGame(object):
                  curr_question=None):
 
         self.score = score
-        self.num_hints = hints
+        self.num_hints = num_hints
 
         if hints_remaining is None:
             self.hints_remaining = self.num_hints
@@ -97,22 +101,29 @@ class PlanigaleGame(object):
         else:
             self.questions = []
             for q in questions:
-                if isinstance(q, dict):
-                    q.pop('py/object')
-                    self.questions.append(Question(**q))
-                else:
-                    self.questions = questions
+                self.questions.append(Question(**q))
 
         self.question_num = question_num
 
         if curr_question is None:
             self.curr_question = self.questions[0]
         else:
-            if isinstance(curr_question, dict):
-                curr_question.pop('py/object')
-                self.curr_question = Question(**curr_question)
-            else:
-                self.curr_question = curr_question
+            # when constructing the question, create reference to entry in question array
+            self.curr_question = self.questions[self.question_num-1]
+            # self.curr_question = Question(**curr_question)
+
+    @staticmethod
+    def from_json(json_text):
+        game_data = json.loads(json_text)
+
+        game = PlanigaleGame(**game_data)
+
+        return game
+
+    def to_json(self):
+        json_text = jsonpickle.encode(self, unpicklable=False)
+
+        return json_text
 
     def score_question(self, question, guess_species, hints=0):
         if question.verify(guess_species):
@@ -126,6 +137,16 @@ class PlanigaleGame(object):
             return True
         else:
             return False
+
+    def __repr__(self):
+        repr = "Game.\n\n"
+        for n, q in enumerate(self.questions, start=1):
+            repr += "{}: {}\n\n".format(n, q)
+
+        repr += "Current question {} of {}.\n".format(self.question_num, self.total_questions )
+        repr += "Score: {}. Hints remaining: {}.".format(self.score, self.hints_remaining)
+
+        return repr
 
 
 class Question(object):
@@ -146,16 +167,9 @@ class Question(object):
         if species is None:
             self.species = random.sample(species_data,3)
         else:
-            if type(species[0]) == type({}):
-                self.species = []
-                for s in species:
-                    if isinstance(s, dict):
-                        s.pop('py/object')
-                        self.species.append(Species(**s))
-                    else:
-                        self.species.append(s)
-            else:
-                self.species = species
+            self.species = []
+            for s in species:
+                self.species.append(Species(**s))
 
 
         if species_picture is None or species_thumb is None:
@@ -173,11 +187,7 @@ class Question(object):
             self.answer, self.picture, self.thumb, self.text = random.choice(
                 list(zip(self.species, self.species_picture, self.species_thumb, self.species_text)))
         else:
-            if isinstance(answer, dict):
-                answer.pop('py/object')
-                self.answer = Species(**answer)
-            else:
-                self.answer = answer
+            self.answer = Species(**answer)
             self.picture = picture
             self.thumb = thumb
             self.text = text
@@ -188,23 +198,26 @@ class Question(object):
         if guess is None:
             self.guess = None
         else:
-            if type(guess) == type({}):
-                guess.pop('py/object')
-                self.guess = Species(**guess)
-            else:
-                self.guess = guess
+            self.guess = Species(**guess)
 
 
         self.correct = correct
 
     def verify(self, guess_species):
-        if self.guess == None:
+        if self.guess is None:
             self.guess = guess_species
         else:
             return
         self.correct = (guess_species == self.answer)
 
         return self.correct
+
+    def __repr__(self):
+        repr = "Question.\n"
+        for n, s in enumerate(self.species, start=1):
+            repr += "{}. {}\n".format(n, s)
+        repr += "Guess: {}. Correct: {}.".format(self.guess, self.correct)
+        return repr
 
 
 class Species(object):
@@ -224,6 +237,13 @@ class Species(object):
         self.images_list = images_list
         self.thumbs_list = thumbs_list
         self.web_url = web_url
+
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+            and self.__dict__ == other.__dict__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -310,10 +330,10 @@ class Species(object):
 
 
 class PlanigaleConsole(object):
-    def __init__(self, data, total_questions=3, hints=0):
-        self.game = PlanigaleGame(data, total_questions=3, hints=0)
+    def __init__(self, data, total_questions=3, num_hints=0):
+        self.game = PlanigaleGame(data, total_questions=3, num_hints=0)
 
-    def play(self, game):
+    def play(self):
         for question_num, question in enumerate(self.game.questions, start=1):
             self.display_question(question, question_num)
             guess_species = self.get_guess(question)
@@ -384,5 +404,5 @@ class PlanigaleConsole(object):
 if __name__ == '__main__':
     # data = Planigale.load_species()
     data = Planigale.load_species_from_json()
-    game = PlanigaleConsole(data)
+    console = PlanigaleConsole(data)
     #game.play()

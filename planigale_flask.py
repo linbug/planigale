@@ -9,160 +9,130 @@ import pickle
 import jsonpickle
 
 app = Flask(__name__)
+
+# Get app secret key for sessions from environment
 app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
+
+# configure logging
 handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=10)
 # handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
-app.logger.error("Starting server.")
-# redis_url=os.getenv('REDIS_URL')
-# redis = redis.from_url(redis_url)
-# redis.set(name='game', value='planigale',ex=15)
-# redis.get(name='game')
+app.logger.info("Starting server.")
 
-def set_value(redis, key, value):
-    redis.set(name=key, value=pickle.dumps(value), ex=60*60)
+# def set_pickle_value(redis, key, value):
+#     redis.set(name=key, value=pickle.dumps(value), ex=60*60)
 
-def get_value(redis, key):
-    pickled_value = redis.get(key)
-    if pickled_value is None:
-        return None
-    return pickle.loads(pickled_value)
+
+# def get_pickle_value(redis, key):
+#     pickled_value = redis.get(key)
+#     if pickled_value is None:
+#         return None
+#     return pickle.loads(pickled_value)
+
+
+# def set_game_session(game):
+#     app.logger.info("Setting game in session: {}".format(game))
+#     if game is not None:
+#         session['game'] = game.to_json()
+
+# def get_game_session():
+#     if 'game' in session:
+#         json_text = session['game']
+#         app.logger.info("Game JSON: {}".format(json_text))
+
+#         game = PlanigaleGame.from_json(json_text)
+
+#         return game
+#     else:
+#         app.logger.info("Game not in session")
+#         return None
+
 
 def set_game(game):
-    app.logger.error("Setting game in session: {}".format(game))
+    app.logger.info("Setting game in redis w/ SID ({}).".format(g._sid))
+    app.logger.info("{}".format(game))
     if game is not None:
-        session['game'] = jsonpickle.encode(game)
+        g._redis.set(name=g._sid, value=game.to_json(), ex=60*60)
+
 
 def get_game():
-    if 'game' in session:
-        json_text = session['game']
-        app.logger.error("Game JSON: {}".format(json_text))
+    app.logger.info("Getting game in redis w/ SID ({}).".format(g._sid))
+    json_text = g._redis.get(g._sid)
+    game = None
+    if json_text is not None:
+        game = PlanigaleGame.from_json(json_text.decode("utf-8"))
 
-        game_data = jsonpickle.decode(json_text)
+    app.logger.info("{}".format(game))
 
-        if isinstance(game_data, dict):
-            game_data.pop('py/object')
-            game = Planigale(**game_data)
-        else:
-            game = game_data
-        return game
-    else:
-        app.logger.error("Game not in session")
-        return None
+    return game
+
 
 def get_new_session():
-    app.logger.error("Getting new session..")
+    app.logger.info("Getting new session..")
     return uuid4()
-    # curr_session = getattr(g, '_curr_session', None)
-    # if curr_session is None:
-    #     curr_session = g._curr_session = 0
-    # else:
-    #     curr_session = g._curr_session = curr_session + 1
 
-    # app.logger.error("New session # {} created.".format(curr_session))
-    # return curr_session
 
-#@app.before_first_request
 def get_species_data():
-    app.logger.error("Getting species data..")
+    app.logger.info("Getting species data..")
     data = getattr(g, '_species_data', None)
-    path = os.path.join(os.getcwd(),'species.pickle')
-    # app.logger.error("Current path is: {}.".format(path))
-    # app.logger.error("{}: {}".format(path, os.path.isfile(path)))
+
     if data is None:
-        # with open(path, 'rb') as f:
-        #     app.logger.error("Loading file: {}".format(f))
-        #     data = g._species_data = pickle.load(f)
+        species = g._species_data = Planigale.load_species_from_json()
 
-        # data = g._species_data = Planigale.load_species(path)
-        data = g._species_data = Planigale.load_species_from_json()
-
-    # app.logger.error("Loaded {} species.".format(len(data)))
-    # app.logger.error("type(data[0]):{}".format(type(data[0])))
-    # app.logger.error("dir(data[0]):{}".format(dir(data[0])))
-    # app.logger.error("data[0].keys():{}".format(data[0].keys()))
-    # app.logger.error("data[0]['py/object']:{}".format(data[0]['py/object']))
-
-    species = []
-    for item in data:
-        if isinstance(item, dict):
-            item.pop('py/object')
-            species.append(Species(**item))
-        else:
-            species.append(item)
-
-    app.logger.error("Species: {}".format(species[0]))
+    app.logger.info("Species: {}".format(species[0]))
     return species
-    # return data
+
+
+def get_redis():
+    redis_url=os.getenv('REDIS_URL')
+    app.logger.info("Getting connection pool for redis sever: {}".format(redis_url))
+    return redis.from_url(redis_url)
 
 
 @app.before_request
 def before():
-    app.logger.error("Running before()")
+    app.logger.info("Running before()")
     # get redis connection, set it to the g variable
-    # redis_url=os.getenv('REDIS_URL')
-    # app.logger.error("Getting connection pool for redis sever: {}".format(redis_url))
-    # g._redis = redis.from_url(redis_url)
+    g._redis = get_redis()
 
     # get the request ID if it doesn't exist
     g._sid = get_session_id()
+
     # get the game and set it to the g variable
-    # g._game = get_value(g._redis, g._sid)
     g._game = get_game()
 
-    app.logger.error("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
-
+    app.logger.info("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
 
 
 @app.after_request
 def after(response):
-    app.logger.error("Starting after()")
+    app.logger.info("Starting after()")
     # set the game from the g variable to redis
-    # set_value(g._redis, g._sid, g._game)
-    app.logger.error("Game: {}".format(g._game))
+    app.logger.info("Game: {}".format(g._game))
     set_game(g._game)
-    app.logger.error("Game in session: {}".format(session.get('game','Not set')))
-    app.logger.error("Finished after()")
+    app.logger.info("Finished after()")
 
     return response
 
 
-
 def get_session_id():
-    app.logger.error("Getting session ID")
+    app.logger.info("Getting session ID")
     if 'id' not in session:
         session['id'] = get_new_session()
 
-    app.logger.error("Session # {} accessed.".format(session['id']))
+    app.logger.info("Session # {} accessed.".format(session['id']))
     return session['id']
-
-
-# def get_game():
-#     app.logger.error("Getting game")
-#     id = get_session_id()
-
-#     games = getattr(g, '_games', None)
-#     if games is None:
-#         games = g._games = {}
-
-#     if id not in games:
-#         games[id] = PlanigaleGame(get_species_data())
-#         # forward to question for new game?
-#     game = games[id]
-
-#     app.logger.error("Game object loaded for session # {}.".format(id))
-#     return game
 
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    app.logger.error("Ready to render index..")
+    app.logger.info("Ready to render index..")
     return render_template('index.html')
 
 @app.route('/newgame', methods = ['POST'])
 def newgame():
-    app.logger.error("Running newgame")
+    app.logger.info("Running newgame")
     try:
         total_questions = int(request.form["num_questions"])
 
@@ -174,17 +144,17 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        app.logger.error("Loading data..")
+        app.logger.info("Loading data..")
         data = get_species_data()
-        app.logger.error("Loaded data..")
+        app.logger.info("Loaded data..")
         g._game = PlanigaleGame(data, total_questions, num_hints)
         set_game(g._game)
-        app.logger.error("Created game: {}".format(g._game))
+        app.logger.info("Created game: {}".format(g._game))
 
         return redirect(url_for('question'))
     except Exception as ex:
         flash("Error while creating game. Please retry.")
-        app.logger.error("An exception occured while getting newgame: {}".format(ex))
+        app.logger.info("An exception occured while getting newgame: {}".format(ex))
         return redirect(url_for('index'))
 
 
@@ -219,26 +189,35 @@ def question():
         hints_remaining = game.hints_remaining,
         hint = game.curr_question.revealed_hint )
 
+
 @app.route('/answer', methods=['POST'])
 def answer():
+    app.logger.info('Starting answer()..')
     try:
         choice = int(request.form["choice"])
     except(Exception):
         flash("Please select a species name!")
         return redirect(url_for('question'))
+
     game = g._game
     guess_species = game.curr_question.species[choice]
     game.score_question(game.curr_question, guess_species)
 
     validation = "Correct" if game.curr_question.correct else "Incorrect"
 
+    app.logger.info("In answer: {}".format(game.curr_question))
+    app.logger.info("In answer: {}.".format(game))
+
+    question = game.curr_question
+    choices = zip(question.species, question.species_text, question.species_thumb)
+    app.logger.info("Curr question Types. Species: {}, Text: {}, Thumb: {}.".format(type(question.species), type(question.species_text), type(question.species_thumb)))
 
     return render_template('answer.html',
-                            question_num = game.question_num,
-                            total_questions = game.total_questions,
-                            question = game.curr_question,
-                            validation = validation)
-
+                           question_num = game.question_num,
+                           total_questions = game.total_questions,
+                           question = game.curr_question,
+                           validation = validation,
+                           choices = choices)
 
 
 @app.route('/next', methods=['POST'])
@@ -250,12 +229,18 @@ def next():
     else:
         return redirect(url_for('summary'))
 
+
 @app.route('/summary', methods=['GET'])
 def summary():
     game = g._game
 
-    return render_template('summary.html',
-                           game = game)
+    if game.question_num != game.total_questions and game.curr_question.guess is None:
+        flash("Please finish the quiz first!")
+        return redirect(url_for('question'))
+    else:
+        return render_template('summary.html',
+                               game = game)
+
 
 @app.template_global(name='zip')
 def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
@@ -263,4 +248,4 @@ def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
