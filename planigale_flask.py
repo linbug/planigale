@@ -12,7 +12,7 @@ import jsonpickle
 app = Flask(__name__)
 
 # Get app secret key for sessions from environment
-app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
+app.secret_key =  os.getenv('PLANIGALE_KEY',os.urandom(24))
 
 # configure logging
 handler = RotatingFileHandler('planigale.log', maxBytes=100000, backupCount=10)
