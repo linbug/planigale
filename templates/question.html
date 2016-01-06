@@ -26,8 +26,10 @@
               <form  action="/answer" method="post">
                 {% for species in question.species %}
                 <div class=inputrow>
-                    <input type="radio" name="choice" value={{loop.index0}} default>
+                  <input type="radio" id="choice{{loop.index}}" name="choice" value="{{loop.index0}}" {% if loop.index0 == 0 %}checked="checked"{% endif %}>
+                  <label for="choice{{loop.index}}">
                     {{macros.italicise_names(species, hint=hint)}}
+                  </label>
                 </div>
                 <br>
                     {% endfor %}

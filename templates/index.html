@@ -22,10 +22,10 @@
                   <div class=numquestions>
                     <h3> Number of questions </h3>
                         <div class="inputbox">
-                            <select>
-                                {% for option in [str(x) for x in range(1,6)] %}
+                            <select name="num_questions">
+                                {% for option in range(1,6) %}
 
-                                <option name="num_questions" value = option>option</option>
+                                <option value ="{{option}}" {% if option == 3 %}selected="selected"{% endif %}>{{option}}</option>
 
                                 {% endfor %}
                             </select>
@@ -37,18 +37,18 @@
                       Difficulty
                   </h3>
                   <div class = inputrow>
-                      <input type="radio" name="difficulty" value="easy">
-                      <p class=forminput>Easy (unlimited hints!)</p>
+                      <input type="radio" id="easy" name="difficulty" value="easy" checked="checked">
+                      <label for="easy"><p class=forminput>Easy (unlimited hints!)</p></label>
                   </div>
                   <br>
                   <div class = inputrow>
-                      <input type="radio" name="difficulty" value="medium">
-                      <p class=forminput>Medium (limited hints!)</p>
+                      <input type="radio" id="medium" name="difficulty" value="medium">
+                      <label for="medium"><p class=forminput>Medium (limited hints!)</p></label>
                   </div>
                   <br>
                   <div class = inputrow>
-                      <input type="radio" name="difficulty" value="hard">
-                      <p class=forminput>Hard (hints be damned!)</p>
+                      <input type="radio" id="hard" name="difficulty" value="hard">
+                      <label for="hard"><p class=forminput>Hard (hints be damned!)</p></label>
                   </div>
                   <br>
               </div>

@@ -5,6 +5,7 @@ body {
   flex-direction: column;
   font-family:'Quicksand', sans-serif; font-weight: 400;
   background-color: #EDE9E6;
+  overflow-x: hidden;
 }
 
 h1{
