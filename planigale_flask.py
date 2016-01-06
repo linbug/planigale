@@ -252,8 +252,16 @@ def summary():
         flash("Please finish the quiz first!")
         return redirect(url_for('question'))
     else:
+
+        choices = []
+        for question in game.questions:
+            choices.append(zip(question.species, question.species_text, question.species_thumb))
+
+        questions = zip (game.questions, choices)
+
         return render_template('summary.html',
-                               game = game)
+                               game = game,
+                               questions = questions)
 
 
 @app.template_global(name='zip')

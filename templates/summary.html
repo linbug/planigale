@@ -18,12 +18,12 @@
             </div>
         </div>
 
-        {% for question in game.questions %}
+        {% for question, choices in questions %}
         <div class="sum-question">
           <div class="sum-quest-lead">
             <h3>Question {{loop.index}}.</h3>
         </div>
-        {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+        {% for species, text, thumb in choices %}
         <div class="sum-quest-ans">
             <div class="{% if species == question.answer %} answer {% endif %}row">
               <div class="thumb cell">

@@ -30,7 +30,7 @@
                                     <h3>Your other choices were: </h4>
                                 </div>
                                 <div class="ans-others-list">
-                                    {% for species, text, thumb in choices) %}
+                                    {% for species, text, thumb in choices %}
                                     {% if species != question.answer %}
                                       <div class="row">
                                         <div class="cell"><img class = thumb src={{thumb}}></div>
