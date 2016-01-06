@@ -16,11 +16,10 @@ app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
 
 # configure logging
 handler = RotatingFileHandler('planigale.log', maxBytes=100000, backupCount=10)
-handler.setLevel(logging.DEBUG)
-app.logger.addHandler(handler)
 std = logging.StreamHandler(sys.stdout)
-std.setLevel(logging.DEBUG)
 app.logger.addHandler(std)
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.DEBUG)
 app.logger.debug("Starting server.")
 
 # def set_pickle_value(redis, key, value):
