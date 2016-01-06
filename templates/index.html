@@ -22,7 +22,12 @@
                   <div class=numquestions>
                     <h3> Number of questions </h3>
                         <div class="inputbox">
-                    <input type="text" name="num_questions" class= "questionform" value="3" position="center">
+                            <select>
+                                {% for option in [str(x) for x in range(1,6)] %}
+                                <option name="num_questions" value = option>option</option>
+                                { % endfro%}
+                            </select>
+                    <!-- <input type="text" name="num_questions" class= "questionform" value="3" position="center"> -->
                         </div>
                 </div>
                 <div class=difficulty>
