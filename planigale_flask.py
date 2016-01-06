@@ -3,6 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from planigale import Question, Species, Planigale, PlanigaleGame, PlanigaleConsole
 import os
+import sys
 from uuid import uuid4
 import redis
 import pickle
@@ -14,9 +15,12 @@ app = Flask(__name__)
 app.secret_key =  os.getenv('PLANGIALE_KEY',os.urandom(24))
 
 # configure logging
-handler = RotatingFileHandler('planigale.log', maxBytes=10000, backupCount=10)
+handler = RotatingFileHandler('planigale.log', maxBytes=100000, backupCount=10)
 handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
+std = logging.StreamHandler(sys.stdout)
+std.setLevel(logging.DEBUG)
+app.logger.addHandler(std)
 app.logger.debug("Starting server.")
 
 # def set_pickle_value(redis, key, value):
