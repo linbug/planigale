@@ -54,8 +54,10 @@ app.logger.debug("Starting server.")
 def set_game(game):
     app.logger.debug("Setting game in redis w/ SID ({}).".format(g._sid))
     app.logger.debug("{}".format(game))
+    timeout = 60 * 15 # timeout in seconds
+
     if game is not None:
-        g._redis.set(name=g._sid, value=game.to_json(), ex=60*60)
+        g._redis.set(name=g._sid, value=game.to_json(), ex=timeout)
 
 
 def get_game():
@@ -211,6 +213,11 @@ def answer():
         return redirect(url_for('question'))
 
     game = g._game
+
+    if game is None:
+        # flash("Please start a game first!")
+        return redirect(url_for('index'))
+
     guess_species = game.curr_question.species[choice]
     game.score_question(game.curr_question, guess_species)
 
@@ -235,7 +242,10 @@ def answer():
 def next():
     game = g._game
 
-    if game.next_question():
+    if game is None:
+        # flash("Please start a game first!")
+        return redirect(url_for('index'))
+    elif game.next_question():
         return redirect(url_for('question'))
     else:
         return redirect(url_for('summary'))
