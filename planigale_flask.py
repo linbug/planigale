@@ -156,14 +156,18 @@ def newgame():
 
         return redirect(url_for('question'))
     except Exception as ex:
-        flash("Error while creating game. Please retry.")
-        app.logger.debug("An exception occured while getting newgame: {}".format(ex))
+        # flash("Error while creating game. Please retry.")
+        app.logger.error("An exception occured while getting newgame: {}".format(ex))
         return redirect(url_for('index'))
 
 
 @app.route('/question', methods=['POST','GET'])
 def question():
     game = g._game
+
+    if game is None:
+        # flash("Please start a game first!")
+        return redirect(url_for('index'))
 
     if request.method == 'GET':
         if game.curr_question.guess is not None:
@@ -237,7 +241,10 @@ def next():
 def summary():
     game = g._game
 
-    if game.question_num != game.total_questions and game.curr_question.guess is None:
+    if game is None:
+        # flash("Please start a game first!")
+        return redirect(url_for('index'))
+    elif game.question_num != game.total_questions and game.curr_question.guess is None:
         flash("Please finish the quiz first!")
         return redirect(url_for('question'))
     else:
