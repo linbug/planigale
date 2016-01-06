@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 {%include 'head.html' %}
 
 <body>
@@ -29,7 +30,7 @@
                                     <h3>Your other choices were: </h4>
                                 </div>
                                 <div class="ans-others-list">
-                                    {% for species, text, thumb in zip(question.species, question.species_text, question.species_thumb) %}
+                                    {% for species, text, thumb in choices) %}
                                     {% if species != question.answer %}
                                       <div class="row">
                                         <div class="cell"><img class = thumb src={{thumb}}></div>
@@ -54,20 +55,6 @@
                                     </p>
                                 </div>
                             </section>
-
- <!--                            <div class="description">
-        <h2>Code</h2>
-        <style>/* Gradient color1 - color2 - color1 */
-
-hr.style-one {
-    border: 0;
-    height: 1px;
-    background: #333;
-    background-image: linear-gradient(to right, #ccc, #333, #ccc);
-}</style>
-
-        </div> -->
-
                         </article>
                     </div>
                 </section>
