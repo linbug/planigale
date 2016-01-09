@@ -23,12 +23,13 @@ Planigale was originally built for the command line. If you want to play, planig
 - Install the following non built-in libraries using pip:
   - `pillow` for image processing
   - `jsonpickle` for object serialization to json
+  
+  You can install library dependencies using `pip install -r requirements.txt` (this will also install dependencies for web planiagle as well)
 
 ###Usage
 
 - clone this repo to your computer
 - `cd` to the planigale directory in the terminal
-- install library dependencies using `pip install -r requirements.txt` (this will also install dependencies for web planiagle as well)
 - run `python planigale.py`
 
 ------------------------------------------------
