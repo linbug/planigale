@@ -13,6 +13,8 @@ Many cute! Much fun!
 ------------------------------------------------
 ##Command line version
 
+Planigale was originally built for the command line. If you want to play, you are better off with [version 1.0](https://github.com/linbug/planigale/releases/tag/48cda76).
+
 ![alt tag](https://raw.githubusercontent.com/linbug/linbug.github.io/master/_downloads/terminal_planigale.png)
 
 ###Dependencies
