@@ -21,9 +21,8 @@ Planigale was originally built for the command line. If you want to play, planig
 
 - Python 3
 - Install the following non built-in libraries using pip:
-
-  `pillow` for image processing
-  `jsonpickle` for object serialization to json
+  - `pillow` for image processing
+  - `jsonpickle` for object serialization to json
 
 ###Usage
 
@@ -44,17 +43,16 @@ Planigale was a full-stack learning experience. We refactored the command line g
 
 - Python 3.5.0
 - In addition to the libraries used for the command line version above, install the following non-built-in libraries using pip:
-
-    - `flask`
-    - `redis`
-    - `gunicorn` a WSGI container such as this is required for hosting this app in a production environment.
+    - `flask` is a micro web framework which makes it easy to create web applications.
+    - `redis` is a Python interface to the popular key-value store which is super fast and easy to set up. We used this to implement server-side sessions.
+    - `gunicorn` is a WSGI container which is required for hosting this app in a production environment.
 
 ###Usage
 
 Before running planigale on a local (or remote) host, you must configure two environment variables. Instructions to set environment variables vary based upon your OS and platform.
 
-- `REDIS_URL` must be set to the URL of the Redis instance which is being used for hosting the app. We used a free Redis to Go instance from heroku.
-- `PLANIGALE_KEY` must be set to a random value to ensure consistent client side sessions for flask (see (here)[http://flask.pocoo.org/docs/0.10/quickstart/#sessions] for more info).
+- `REDIS_URL` must be set to the URL of the Redis instance which is being used for hosting the app. We used a free [Redis to Go](https://devcenter.heroku.com/articles/redistogo) instance from heroku.
+- `PLANIGALE_KEY` must be set to a random value to ensure consistent client side sessions for flask [here](http://flask.pocoo.org/docs/0.10/quickstart/#sessions) for more info).
 
 ####Local host
 
@@ -65,15 +63,15 @@ Follow the below instructions to run the planigale web application locally.
 - install library dependencies using `pip install -r requirements.txt`
 - Run..
   - `python planigale_flask.py` for flask server in debug mode OR..
-  - `gunicorn planigale_flask:app --log-file=-` for gunicorn server
+  - `gunicorn planigale_flask:app --log-file=-` for gunicorn server with WSGI logs displayed to console.
 - open a web browser. planigale should be hosted at http://localhost:5000/
 
 ####Remote Host
 
-Heroku was used for hosting this flask app. There are some good instructions for getting started with Python on Heroku (here)[https://devcenter.heroku.com/articles/getting-started-with-python-o]. This repository already contains the required files for hosting this on heroku.
+Heroku was used for hosting this flask app. There are some good instructions for getting started with Python on Heroku [here](https://devcenter.heroku.com/articles/getting-started-with-python-o). This repository already contains the required files for hosting this on heroku.
 
 - `runtime.txt` is required to specify the Python 3.5.0 runtime for the heroku build process.
 - `requirements.txt` specifies the library requirements for the heroku build process.
-- `Procfile` specifes the commands and processes which should be run after completing the heroku build process.
+- `Procfile` specifies the commands and processes which should be run after completing the heroku build process.
 
-If you have the (heroku toolbelt)[https://toolbelt.heroku.com/] installed, you can run the application locally using these settings using the command `heroku local` from the planigale directory.
+If you have the [heroku toolbelt](https://toolbelt.heroku.com/) installed, you can run the application locally using these settings using the command `heroku local` from the planigale directory.
