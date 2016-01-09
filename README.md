@@ -2,16 +2,19 @@
 
 <a href='http://www.recurse.com' title='Made with love at the Recurse Center'><img src='https://cloud.githubusercontent.com/assets/2883345/11325206/336ea5f4-9150-11e5-9e90-d86ad31993d8.png' height='20px'/></a>
 
-A squishy command-line quiz based on the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind. 
-Test your knowledge by matching the picture to the species!
+Planigale is a game that challenges you to match the picture of the species with its Latin name. 
+Available as a [web app](http://planigale.dvndrsn.com/) and on the command line.
+
+Data for Planigale were taken from the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind.
 
 Many cute! Much fun!
 
-![alt tag](http://i.dailymail.co.uk/i/pix/2012/07/19/article-0-141F606E000005DC-916_634x744.jpg)
-
 ------------------------------------------------
+##Command line version
 
-##Dependencies
+![alt tag](https://raw.githubusercontent.com/linbug/linbug.github.io/master/_downloads/terminal_planigale.png)
+
+###Dependencies
 
 - Python 3
 - the following (non built-in) library:
@@ -22,3 +25,12 @@ Many cute! Much fun!
 
 - clone this repo to your computer
 - `cd` to the planigale directory in the terminal and run `python planigale.py`
+
+------------------------------------------------
+
+##[Web app](http://planigale.dvndrsn.com/)
+
+![alt tag](http://s24.postimg.org/b2cw4uzo5/Screen_Shot_2016_01_08_at_20_30_07.png)
+
+Planigale was a full-stack learning experience. We refactored the command line game into a [Flask](http://flask.pocoo.org/) app, hosted it on [Heroku](https://www.heroku.com/) and stored the gameplay state in [Redis](http://redis.io/). 
+
