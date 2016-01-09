@@ -8,11 +8,42 @@ body {
   overflow-x: hidden;
 }
 
+header {
+  background-color: #BECFD8;
+}
+
+.title {
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    margin:10px 0 0 0 ;
+}
+
+.title img {
+    max-height: 75px;
+    max-width: 100%;
+}
+
 h1{
-  text-align:center;
+  /* text-align:center; */
   font-size:60px;
-  margin:10px 0 0 0 ;
   color:black;
+  margin: 0px;
+}
+
+nav {
+    display:flex;
+    justify-content: center;
+    text-align:center;
+    list-style: none;
+    margin:0 0 5px 0;
+    padding:0;
+}
+
+nav a {
+  flex:1;
+margin:10px 0;
+font-weight: bold;
 }
 
 h2{
@@ -66,10 +97,6 @@ p {
 .forminput{
   text-align:left;
   flex:1;
-}
-
-header {
-  background-color: #BECFD8;
 }
 
 section {
@@ -447,21 +474,6 @@ opacity: 80%;
     position:center;
 }
 
-
-ul{
-display:flex;
-  justify-content: center;
-  text-align:center;
-  list-style: none;
-  margin:0 0 5px 0;
-  padding:0;
-}
-
-li{
-  flex:1;
-margin:10px 0;
-font-weight: bold;
-}
 
 button {
     border: 0;

@@ -11,16 +11,22 @@ import jsonpickle
 
 app = Flask(__name__)
 
-# Get app secret key for sessions from environment
+# Get app secret key for sessions from environment variable
+# MUST be manually set to run on server, but random key is OK locally
 app.secret_key =  os.getenv('PLANIGALE_KEY',os.urandom(24))
 
-# configure logging
-handler = RotatingFileHandler('planigale.log', maxBytes=100000, backupCount=10)
-std = logging.StreamHandler(sys.stdout)
-app.logger.addHandler(std)
-app.logger.addHandler(handler)
-app.logger.setLevel(logging.DEBUG)
-app.logger.debug("Starting server.")
+# Get redis URL from environment variable
+# MUST be manually set to run on server OR locally
+redis_url = os.getenv('REDIS_URL')
+
+# configure logging if not running debug
+if app.debug != True:
+    handler = RotatingFileHandler('planigale.log', maxBytes=100000, backupCount=10)
+    std = logging.StreamHandler(sys.stdout)
+    app.logger.addHandler(std)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.debug("Starting server.")
 
 # def set_pickle_value(redis, key, value):
 #     redis.set(name=key, value=pickle.dumps(value), ex=60*60)
@@ -72,11 +78,6 @@ def get_game():
     return game
 
 
-def get_new_session():
-    app.logger.debug("Getting new session..")
-    return uuid4()
-
-
 def get_species_data():
     app.logger.debug("Getting species data..")
     data = getattr(g, '_species_data', None)
@@ -84,14 +85,27 @@ def get_species_data():
     if data is None:
         species = g._species_data = Planigale.load_species_from_json()
 
-    app.logger.debug("Species: {}".format(species[0]))
     return species
 
 
 def get_redis():
-    redis_url=os.getenv('REDIS_URL')
     app.logger.debug("Getting connection pool for redis sever: {}".format(redis_url))
+
     return redis.from_url(redis_url)
+
+
+def get_new_session():
+    app.logger.debug("Getting new session..")
+    return uuid4()
+
+
+def get_session_id():
+    app.logger.debug("Getting session ID")
+    if 'id' not in session:
+        session['id'] = get_new_session()
+
+    app.logger.debug("Session # {} accessed.".format(session['id']))
+    return session['id']
 
 
 @app.before_request
@@ -106,27 +120,14 @@ def before():
     # get the game and set it to the g variable
     g._game = get_game()
 
-    app.logger.debug("finished before(): SID: {}, Game: {}".format(g._sid, g._game))
-
 
 @app.after_request
 def after(response):
     app.logger.debug("Starting after()")
     # set the game from the g variable to redis
-    app.logger.debug("Game: {}".format(g._game))
     set_game(g._game)
-    app.logger.debug("Finished after()")
 
     return response
-
-
-def get_session_id():
-    app.logger.debug("Getting session ID")
-    if 'id' not in session:
-        session['id'] = get_new_session()
-
-    app.logger.debug("Session # {} accessed.".format(session['id']))
-    return session['id']
 
 
 @app.route('/', methods=['GET'])
@@ -135,9 +136,11 @@ def index():
     app.logger.debug("Ready to render index..")
     return render_template('index.html')
 
+
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
+
 
 @app.route('/newgame', methods = ['POST'])
 def newgame():
@@ -153,12 +156,9 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        app.logger.debug("Loading data..")
         data = get_species_data()
-        app.logger.debug("Loaded data..")
         g._game = PlanigaleGame(data, total_questions, num_hints)
         set_game(g._game)
-        app.logger.debug("Created game: {}".format(g._game))
 
         return redirect(url_for('question'))
     except Exception as ex:
@@ -206,29 +206,27 @@ def question():
 @app.route('/answer', methods=['POST'])
 def answer():
     app.logger.debug('Starting answer()..')
+    # Get the game and re-route if not set
+    game = g._game
+    if game is None:
+        # flash("Please start a game first!")
+        return redirect(url_for('index'))
+
+    # get the user's choice
     try:
         choice = int(request.form["choice"])
     except(Exception):
         flash("Please select a species name!")
         return redirect(url_for('question'))
 
-    game = g._game
-
-    if game is None:
-        # flash("Please start a game first!")
-        return redirect(url_for('index'))
-
+    # validate the user's guess
     guess_species = game.curr_question.species[choice]
     game.score_question(game.curr_question, guess_species)
 
+    # set and pass variables for use in template
     validation = "correct" if game.curr_question.correct else "incorrect"
-
-    app.logger.debug("In answer: {}".format(game.curr_question))
-    app.logger.debug("In answer: {}.".format(game))
-
     question = game.curr_question
     choices = zip(question.species, question.species_text, question.species_thumb)
-    app.logger.debug("Curr question Types. Species: {}, Text: {}, Thumb: {}.".format(type(question.species), type(question.species_text), type(question.species_thumb)))
 
     return render_template('answer.html',
                            question_num = game.question_num,
@@ -240,12 +238,14 @@ def answer():
 
 @app.route('/next', methods=['POST'])
 def next():
+    # Get the game and re-route if not set
     game = g._game
-
     if game is None:
         # flash("Please start a game first!")
         return redirect(url_for('index'))
-    elif game.next_question():
+
+    # Get the next question or route to summary when complete
+    if game.next_question():
         return redirect(url_for('question'))
     else:
         return redirect(url_for('summary'))
@@ -253,16 +253,18 @@ def next():
 
 @app.route('/summary', methods=['GET'])
 def summary():
+    # Get the game and re-route if not set
     game = g._game
-
     if game is None:
         # flash("Please start a game first!")
         return redirect(url_for('index'))
-    elif game.question_num != game.total_questions and game.curr_question.guess is None:
+
+    # Re-route to current question if quiz is not completed yet
+    if game.question_num != game.total_questions and game.curr_question.guess is None:
         flash("Please finish the quiz first!")
         return redirect(url_for('question'))
     else:
-
+        # Set the variables to pass to the template for rendering
         choices = []
         for question in game.questions:
             choices.append(zip(question.species, question.species_text, question.species_thumb))
@@ -274,10 +276,6 @@ def summary():
                                questions = questions)
 
 
-@app.template_global(name='zip')
-def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
-    return __builtins__.zip(*args, **kwargs)
-
-
 if __name__ == '__main__':
+    # run in debug mode if run directly from console
     app.run(debug=True)
