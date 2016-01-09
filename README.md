@@ -3,6 +3,7 @@
 <a href='http://www.recurse.com' title='Made with love at the Recurse Center'><img src='https://cloud.githubusercontent.com/assets/2883345/11325206/336ea5f4-9150-11e5-9e90-d86ad31993d8.png' height='20px'/></a>
 
 Planigale is a game that challenges you to match the picture of the species with its Latin name. 
+
 Available as a [web app](http://planigale.dvndrsn.com/) and on the command line.
 
 Data for Planigale were taken from the [Encyclopedia of Life](http://eol.org/), a repository of all the species known to mankind.
