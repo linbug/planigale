@@ -33,5 +33,5 @@ Many cute! Much fun!
 
 ![alt tag](http://s24.postimg.org/b2cw4uzo5/Screen_Shot_2016_01_08_at_20_30_07.png)
 
-Planigale was a full-stack learning experience. We refactored the command line game into a [Flask](http://flask.pocoo.org/) app, hosted it on [Heroku](https://www.heroku.com/) and stored the gameplay state in [Redis](http://redis.io/). 
+Planigale was a full-stack learning experience. We refactored the command line game into a [Flask](http://flask.pocoo.org/) app, designed the front-end from scratch, hosted it on [Heroku](https://www.heroku.com/) and stored the gameplay state in [Redis](http://redis.io/). 
 
