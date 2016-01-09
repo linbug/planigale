@@ -393,3 +393,4 @@ class PlanigaleConsole(object):
 if __name__ == '__main__':
     data = Planigale.load_species_from_json()
     console = PlanigaleConsole(data)
+    console.play()
