@@ -110,7 +110,6 @@ class PlanigaleGame(object):
         else:
             # when constructing the question, create reference to entry in question array
             self.curr_question = self.questions[self.question_num-1]
-            # self.curr_question = Question(**curr_question)
 
     @staticmethod
     def from_json(json_text):
@@ -296,9 +295,6 @@ class Species(object):
                 images.append(media_url)
                 thumbs.append(thumb_url)
             elif description is not None and mime_type == 'text':
-                # remove html tags and only save first paragraph of text
-                # TODO - determine if only top-rated text should be taken
-                # lower rated text can be can be unrelated or not helpful..
                 text.append(re.sub('<[^<]+?>', '',
                                    description
                                    .replace("</p>", '/n').
@@ -356,18 +352,11 @@ class PlanigaleConsole(object):
             img.show()
         except Exception as ex:
             print(ex)
-            # question.picture = 'http://s7.postimg.org/dlar2hyfv/planigale_missing.jpg'
-            # response = urlopen(question.picture)
-            # img = Image.open(BytesIO(response.read()))
-            # img.show()
-            # question.answer = Species('Planigale maculata', 'Planigale', question.picture, '', '')
-            # question.species = [question.answer] * 3
 
         for choice_num, species in enumerate(question.species, start = 1):
             print("{}. {}".format(choice_num, species.scientific_name))
 
     def get_guess(self, question):
-        #todo - entering 0 or negative numbers will break this..
         guess = input("\nWhat species is in this picture? Enter a choice between 1 and {}: ".format(len(question.species)))
         while True:
             try:
@@ -402,7 +391,5 @@ class PlanigaleConsole(object):
 
 
 if __name__ == '__main__':
-    # data = Planigale.load_species()
     data = Planigale.load_species_from_json()
     console = PlanigaleConsole(data)
-    #game.play()
