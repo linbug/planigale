@@ -455,4 +455,4 @@ class PlanigaleConsole(object):
 if __name__ == '__main__':
     sid_list, species_data = Planigale.load_species_from_json(num_species=500)
     console = PlanigaleConsole(species_data)
-    # console.play()
+    console.play()
