@@ -106,7 +106,7 @@ class Planigale(object):
         # Update the list for all keys for the entity
         # Update each value for the entity keys
         for key, val in data.items():
-            redis_key = ':'.join([entity,key])
+            redis_key = ':'.join([entity,str(key)])
             json_text = jsonpickle.encode(val, unpicklable=False)
             print("Adding key {} to redis..".format(redis_key))
             redis.sadd(entity, key)
@@ -315,7 +315,15 @@ class Species(object):
         page = Planigale.get_url(url)
 
         # get name data
-        scientific_name = page['scientificName']
+        scientific_name = None
+        is_species = False
+        for taxon in page['taxonConcepts']:
+            sn = taxon.get('scientificName')
+            if taxon.get('taxonRank') == 'Species' and len(sn.split(" ")) > 2:
+                scientific_name = sn
+                is_species = True
+                break
+
         common_name = ''
         for name in page['vernacularNames']:
             if name['language'] == 'en' and \
@@ -357,11 +365,6 @@ class Species(object):
         has_names = scientific_name is not None and common_name is not None
         has_images = len(images)
         has_text = len(text)
-        is_species = False
-        for taxon in page['taxonConcepts']:
-            if taxon.get('taxonRank') == 'Species':
-                is_species = True
-                break
 
         if has_names and has_images and has_text and is_species:
             return cls(scientific_name=scientific_name,
