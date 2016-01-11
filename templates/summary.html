@@ -18,24 +18,24 @@
             </div>
         </div>
 
-        {% for question, choices in questions %}
+        {% for q in questions %}
         <div class="sum-question">
           <div class="sum-quest-lead">
             <h3>Question {{loop.index}}.</h3>
         </div>
-        {% for species, text, thumb in choices %}
+        {% for s in q.species %}
         <div class="sum-quest-ans">
-            <div class="{% if species == question.answer %} answer {% endif %}row">
+            <div class="{% if s == q.answer %} answer {% endif %}row">
               <div class="thumb cell">
-                <img src={{thumb}}>
+                <img src={{species_data[s].thumb}}>
               </div>
               <div class="choice-text cell">
-                <a href="{{ species.web_url }}" target="_blank">{{ macros.italicise_names(species)}}</a>
+                <a href="{{ species_data[s].web_url }}" target="_blank">{{ macros.italicise_names(species_data[s])}}</a>
               </div>
               <div class="verify">
 
-                {% if species == question.guess %}
-                    {% if question.guess == question.answer %}
+                {% if s == q.guess %}
+                    {% if q.guess == q.answer %}
 
                 <i class = "fa fa-check fa-2x" background= green ></i>
 

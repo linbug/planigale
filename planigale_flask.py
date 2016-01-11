@@ -73,7 +73,7 @@ def get_game():
     if json_text is not None:
         game = PlanigaleGame.from_json(json_text.decode("utf-8"))
 
-    app.logger.debug("{}".format(game))
+    app.logger.debug("Game: {}".format(game))
 
     return game
 
@@ -107,6 +107,31 @@ def get_session_id():
     app.logger.debug("Session # {} accessed.".format(session['id']))
     return session['id']
 
+def get_current_species_data():
+    q_num = g._game.question_num
+    curr_question = g._game.questions[q_num-1]
+
+    is_last = g._game.total_questions == q_num
+    is_answered = curr_question.correct is not None
+
+    if is_last and is_answered:
+        species_list = []
+        for q in g._game.questions:
+            for s in q.species:
+                species_list.append(s)
+    else:
+        species_list = curr_question.species
+
+    app.logger.debug("Species list: {}".format(species_list))
+    species_data = Planigale.load_species_from_redis(g._redis, species_list)
+
+    return species_data
+
+def get_random_species_data(num_species):
+    species_list = Planigale.get_sid_list_from_redis(g._redis, num_species)
+    species_data = Planigale.load_species_from_redis(g._redis, species_list)
+
+    return species_data
 
 @app.before_request
 def before():
@@ -119,6 +144,10 @@ def before():
 
     # get the game and set it to the g variable
     g._game = get_game()
+
+    # get the current species_data if game is in progress
+    if g._game:
+        g._species_data = get_current_species_data()
 
 
 @app.after_request
@@ -156,7 +185,8 @@ def newgame():
 
         num_hints = difficulty_dict[request.form["difficulty"]]
 
-        data = get_species_data()
+        num_species = total_questions * 3
+        data = get_random_species_data(num_species)
         g._game = PlanigaleGame(data, total_questions, num_hints)
         set_game(g._game)
 
@@ -175,20 +205,22 @@ def question():
         # flash("Please start a game first!")
         return redirect(url_for('index'))
 
+    curr_question = game.questions[game.question_num-1]
+
     if request.method == 'GET':
-        if game.curr_question.guess is not None:
+        if curr_question.guess is not None:
             return redirect(url_for('summary'))
 
     if request.method == 'POST':
         try:
             if request.form["hint"] == 'True':
                 if game.hints_remaining>0:
-                    if game.curr_question.revealed_hint == False:
-                        game.curr_question.revealed_hint = True
+                    if curr_question.revealed_hint == False:
+                        curr_question.revealed_hint = True
                         game.hints_remaining -= 1
                     else:
                         pass
-                elif game.curr_question.revealed_hint == True:
+                elif curr_question.revealed_hint == True:
                     pass
                 else:
                     flash("Woops! No hints remaining!")
@@ -197,10 +229,11 @@ def question():
 
     return render_template('question.html',
         question_num = game.question_num,
-        question = game.curr_question,
+        question = curr_question,
         total_questions = game.total_questions,
         hints_remaining = game.hints_remaining,
-        hint = game.curr_question.revealed_hint )
+        hint = curr_question.revealed_hint,
+        species_data = g._species_data)
 
 
 @app.route('/answer', methods=['POST'])
@@ -212,6 +245,8 @@ def answer():
         # flash("Please start a game first!")
         return redirect(url_for('index'))
 
+    curr_question = game.questions[game.question_num-1]
+
     # get the user's choice
     try:
         choice = int(request.form["choice"])
@@ -220,20 +255,18 @@ def answer():
         return redirect(url_for('question'))
 
     # validate the user's guess
-    guess_species = game.curr_question.species[choice]
-    game.score_question(game.curr_question, guess_species)
+    guess_species = curr_question.species[choice]
+    game.score_question(guess_species)
 
     # set and pass variables for use in template
-    validation = "correct" if game.curr_question.correct else "incorrect"
-    question = game.curr_question
-    choices = zip(question.species, question.species_text, question.species_thumb)
+    validation = "correct" if curr_question.correct else "incorrect"
 
     return render_template('answer.html',
                            question_num = game.question_num,
                            total_questions = game.total_questions,
-                           question = game.curr_question,
+                           question = curr_question,
                            validation = validation,
-                           choices = choices)
+                           species_data = g._species_data)
 
 
 @app.route('/next', methods=['POST'])
@@ -259,21 +292,17 @@ def summary():
         # flash("Please start a game first!")
         return redirect(url_for('index'))
 
+    curr_question = game.questions[game.question_num-1]
+
     # Re-route to current question if quiz is not completed yet
-    if game.question_num != game.total_questions and game.curr_question.guess is None:
+    if game.question_num != game.total_questions and curr_question.guess is None:
         flash("Please finish the quiz first!")
         return redirect(url_for('question'))
     else:
-        # Set the variables to pass to the template for rendering
-        choices = []
-        for question in game.questions:
-            choices.append(zip(question.species, question.species_text, question.species_thumb))
-
-        questions = zip (game.questions, choices)
-
         return render_template('summary.html',
                                game = game,
-                               questions = questions)
+                               questions = game.questions,
+                               species_data = g._species_data)
 
 
 if __name__ == '__main__':

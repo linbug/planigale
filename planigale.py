@@ -7,6 +7,8 @@ import os
 import pickle
 import jsonpickle
 import re
+import html
+import copy
 
 class Planigale(object):
     @staticmethod
@@ -18,7 +20,7 @@ class Planigale(object):
         return page
 
     @staticmethod
-    def fetch_species(pickle_file='species.pickle', num_species=10):
+    def fetch_species(num_species=10):
         search_url = 'http://eol.org/api/collections/1.0/55422.json?page=1&per_page={}&filter=&sort_by=richness&sort_field=&cache_ttl='.format(num_species)
 
         print("Pickled species data not found.")
@@ -29,50 +31,98 @@ class Planigale(object):
         print("Received {} results.".format(len(results['collection_items'])))
 
         #create a species list that contains the object ID for each species in results
-        species_ID_list = [item['object_id'] for item in results['collection_items']]
+        species_id_list = [item['object_id'] for item in results['collection_items']]
 
         print("Fetching species details from Pages API..")
-        species = []
-        for ID in species_ID_list:
+        species_data = {}
+        for sid in species_id_list:
               try:
-                  print("Processing EOL ID# {}".format(ID))
-                  s = Species.from_eolid(ID)
-                  species.append(s)
+                  print("Processing EOL ID# {}".format(sid))
+                  s = Species.from_eolid(sid)
+                  species_data[sid] = s
                   print("Initialized species: {}".format(s))
               except Exception as ex:
-                  print("Exception {} was encountered while loading EOL ID {}.".format(ex, ID))
-        species = list(filter(None, species))
-        print("Finished processing species details with {} species in final results.".format(len(species)))
+                  print("Exception {} was encountered while loading EOL ID {}.".format(ex, sid))
+        # species = list(filter(None, species))
+        print("Finished processing species details with {} species in final results.".format(len(species_data)))
 
+        return species_id_list, species_data
+
+    @staticmethod
+    def load_species_from_pickle(data_file='species.pickle', num_species=10):
+        try:
+            with open(data_file, 'rb') as f:
+                species_data = pickle.load(f)
+            sid_list = list(species_data.keys())
+        except (Exception):
+            sid_list, species_data = Planigale.fetch_species(num_species=num_species)
+            Planigale.save_pickle(data_file, species_data)
+        return sid_list, species_data
+
+    @staticmethod
+    def save_pickle(pickle_file, data):
         with open(pickle_file, 'wb') as f:
             print("Writing pickle to {}.".format(pickle_file))
-            pickle.dump(species, f, pickle.HIGHEST_PROTOCOL)
-
-        return species
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
-    def load_species(pickle_file='species.pickle', num_species=500):
+    def load_species_from_json(data_file='species.json', num_species=10):
         try:
-            with open(pickle_file, 'rb') as f:
-                species = pickle.load(f)
-        except (Exception):
-            species = Planigale.fetch_species(pickle_file=pickle_file, num_species=num_species)
-        return species
-
-    @staticmethod
-    def load_species_from_json(json_file='species.json'):
-        try:
-            with open(json_file, 'r') as f:
+            with open(data_file, 'r') as f:
                 json_text = f.read()
                 data = json.loads(json_text)
-                species = []
-                for item in data:
-                    species.append(Species(**item))
-
+                sid_list = []
+                species_data = {}
+                for sid, item in data.items():
+                    sid_list.append(sid)
+                    species_data[sid] = Species(**item)
         except Exception as ex:
+            sid_list, species_data = Planigale.fetch_species(num_species=num_species)
+            Planigale.save_json(data_file, species_data)
             print("Exception: {}".format(ex))
-        return species
+        return sid_list, species_data
 
+    @staticmethod
+    def save_json(json_file, data):
+        json_text = jsonpickle.encode(data, unpicklable=False)
+        with open(json_file, 'w') as f:
+            f.write(json_text)
+
+    @staticmethod
+    def load_species_from_redis(redis, sid_list=None):
+        '''This function will load species from the provided list of sid.
+        Species will be deserialized from json.
+        '''
+        species_data = {}
+        # could get all values in one shot..
+        # json_list = redis.mget(sid_list)
+        for sid in sid_list:
+            json_text = redis.get(':'.join(['species',sid])).decode('utf-8')
+            data = json.loads(json_text)
+            species_data[sid] = Species(**data)
+        return species_data
+
+    def save_redis(redis, data, entity='species'):
+        # Update the list for all keys for the entity
+        # Update each value for the entity keys
+        for key, val in data.items():
+            redis_key = ':'.join([entity,key])
+            json_text = jsonpickle.encode(val, unpicklable=False)
+            print("Adding key {} to redis..".format(redis_key))
+            redis.sadd(entity, key)
+            redis.set(redis_key, json_text)
+
+    @staticmethod
+    def get_sid_list_from_redis(redis, num_species=10):
+        '''This function will get a random list of sid from redis set
+        Using this function:
+        http://redis.io/commands/srandmember
+        '''
+        bytes_list = redis.srandmember('species',num_species)
+        sid_list = []
+        for x in bytes_list:
+            sid_list.append(x.decode('utf-8'))
+        return sid_list
 
 
 class PlanigaleGame(object):
@@ -83,9 +133,7 @@ class PlanigaleGame(object):
                  score=0,
                  hints_remaining=None,
                  questions=None,
-                 question_num=1,
-                 curr_question=None):
-
+                 question_num=1):
         self.score = score
         self.num_hints = num_hints
 
@@ -105,12 +153,6 @@ class PlanigaleGame(object):
 
         self.question_num = question_num
 
-        if curr_question is None:
-            self.curr_question = self.questions[0]
-        else:
-            # when constructing the question, create reference to entry in question array
-            self.curr_question = self.questions[self.question_num-1]
-
     @staticmethod
     def from_json(json_text):
         game_data = json.loads(json_text)
@@ -124,7 +166,9 @@ class PlanigaleGame(object):
 
         return json_text
 
-    def score_question(self, question, guess_species, hints=0):
+    def score_question(self, guess_species, hints=0):
+        question = self.questions[self.question_num-1]
+
         if question.verify(guess_species):
             self.score += 1
         return question.correct
@@ -132,7 +176,6 @@ class PlanigaleGame(object):
     def next_question(self):
         if self.question_num < self.total_questions:
             self.question_num += 1
-            self.curr_question = self.questions[self.question_num-1]
             return True
         else:
             return False
@@ -151,55 +194,44 @@ class PlanigaleGame(object):
 class Question(object):
     def __init__(self,
                  species_data=None,
+                 num_choices=3,
                  species=None,
-                 species_picture=None,
-                 species_thumb=None,
-                 species_text=None,
                  answer=None,
-                 picture=None,
-                 thumb=None,
-                 text=None,
                  revealed_hint=False,
                  guess=None,
                  correct=None):
-        """Good luck!!!! - Me in the past."""
+        # what is required:
+        # picture, thumb, scientific name & common name for each choice..
+        # index for answer?
+        # text for answer
+        # or ID for each one.. fetch from DB
+
+        # species should contain a list of sid for the number of choices
         if species is None:
-            self.species = random.sample(species_data,3)
-        else:
             self.species = []
-            for s in species:
-                self.species.append(Species(**s))
-
-
-        if species_picture is None or species_thumb is None:
-            self.species_picture, self.species_thumb = list(zip(*[random.choice(list(zip(s.images_list, s.thumbs_list))) for s in self.species if s.images_list is not None]))
+            for s in range(num_choices):
+                sid = random.choice(list(species_data.keys()))
+                species_data.pop(sid)
+                self.species.append(sid)
         else:
-            self.species_picture = species_picture
-            self.species_thumb = species_thumb
+            self.species = species
 
-        if species_text is None:
-            self.species_text = [random.choice(s.text_list) for s in self.species if s.text_list is not None]
+        # answer should contain an sid for the answer species
+        if answer is None:
+            self.answer = random.choice(self.species)
         else:
-            self.species_text = species_text
+            self.answer = answer
 
-        if answer is None or picture is None or thumb is None or text is None:
-            self.answer, self.picture, self.thumb, self.text = random.choice(
-                list(zip(self.species, self.species_picture, self.species_thumb, self.species_text)))
-        else:
-            self.answer = Species(**answer)
-            self.picture = picture
-            self.thumb = thumb
-            self.text = text
-
-
+        # revealed hint will be true or false depending on if hint has been used
         self.revealed_hint = revealed_hint
 
+        # guess will equal to the sid of the guessed species
         if guess is None:
             self.guess = None
         else:
-            self.guess = Species(**guess)
+            self.guess = guess
 
-
+        # corrrect will be true or false depending on the user's response
         self.correct = correct
 
     def verify(self, guess_species):
@@ -226,16 +258,18 @@ class Species(object):
     def __init__(self,
                  scientific_name='Plangale',
                  common_name='Planigale!',
-                 text_list=['Its a planigale.'],
-                 images_list=['This is a picture of a planigale.'],
-                 thumbs_list=['This is a thumbail of a planigale.'],
-                 web_url='http://eol.org'):
+                 picture='',
+                 thumb='',
+                 text='',
+                 web_url='http://eol.org',
+                 sid=None):
         self.scientific_name = scientific_name
         self.common_name = common_name
-        self.text_list = text_list
-        self.images_list = images_list
-        self.thumbs_list = thumbs_list
+        self.picture = picture
+        self.thumb = thumb
+        self.text = text
         self.web_url = web_url
+        self.sid = sid
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
@@ -252,7 +286,6 @@ class Species(object):
         json_dict = json.loads(json_str)
         return cls(**json_dict)
 
-
     def show_image(self):
         response = urlopen(random.choice(self.images_list))
         img = Image.open(BytesIO(response.read()))
@@ -260,16 +293,15 @@ class Species(object):
 
     @classmethod
     def from_species(cls, species):
-       ''' Make a deep copy of the species object so we can modify the
-       current picture and text '''
-       species_copy = cls(species.scientific_name, species.common_name, species.text_list, species.images_list, species.thumbs_list, species.web_url)
-       species_copy.picture, species_copy.thumb =  random.choice(list(zip(species_copy.images_list, species_copy.thumbs_list))) \
-                               if species_copy.images_list is not None else None, None
-
-       species_copy.text = random.choice(species_copy.text_list) \
-                           if species_copy.text_list is not None else None
+       ''' Make a deep copy of the species object
+       '''
+       species_copy = cls(scientific_name=species.scientific_name,
+                          common_name=species.common_name,
+                          text=species.text,
+                          picture=species.picture,
+                          thumb=species.thumb,
+                          web_url=species.web_url)
        return species_copy
-
 
     @classmethod
     def from_eolid(cls, eolid):
@@ -282,6 +314,20 @@ class Species(object):
 
         page = Planigale.get_url(url)
 
+        # get name data
+        scientific_name = page['scientificName']
+        common_name = ''
+        for name in page['vernacularNames']:
+            if name['language'] == 'en' and \
+               name.get('eol_preferred') == True:
+                common_name = name['vernacularName']
+                break
+
+        # TODO - clean parens in name data
+        # scientific_name = ' '.join(scientific_name.split()[:2]) + ' (' + \
+        #                     ' '.join(scientific_name.replace('(', '').replace(')', '').split()[2:]) + ')'
+
+        # Get text and picture data
         images = []
         text = []
         thumbs = []
@@ -290,44 +336,53 @@ class Species(object):
                         if objects.get('mimeType') else None
             media_url = objects.get('eolMediaURL')
             thumb_url = objects.get('eolThumbnailURL')
+            lang = objects.get('language')
             description = objects.get('description')
             if media_url is not None and mime_type == 'image':
                 images.append(media_url)
                 thumbs.append(thumb_url)
-            elif description is not None and mime_type == 'text':
-                text.append(re.sub('<[^<]+?>', '',
-                                   description
-                                   .replace("</p>", '/n').
-                                   split('/n')[0]))
+            elif description is not None and mime_type == 'text' and lang == 'en':
+                # Remove HTML tags and escape sequences
+                desc = re.sub('<[^<]+?>', '',
+                              description
+                              .replace("</p>", '/n').
+                              split('/n')[0])
+                desc = html.unescape(desc)
+                text.append(desc)
 
-        scientific_name = page['scientificName']
-
+        # build eol web url
         web_url = 'http://www.eol.org/pages/' + str(page.get('identifier'))
 
-        common_name = ''
-        for name in page['vernacularNames']:
-            if name['language'] == 'en' and \
-               name.get('eol_preferred') == True:
-                common_name = name['vernacularName']
-                break
-
-        # validate the key fields (don't give back a Species if they're not true):
+        # validate the key fields
+        has_names = scientific_name is not None and common_name is not None
         has_images = len(images)
         has_text = len(text)
-        is_species = page['taxonConcepts'][0]['taxonRank'] == 'Species'
+        is_species = False
+        for taxon in page['taxonConcepts']:
+            if taxon.get('taxonRank') == 'Species':
+                is_species = True
+                break
 
-        if has_images and has_text and is_species:
-            return cls(scientific_name, common_name, text, images, thumbs, web_url)
+        if has_names and has_images and has_text and is_species:
+            return cls(scientific_name=scientific_name,
+                       common_name=common_name,
+                       picture=images[0],
+                       thumb=thumbs[0],
+                       text=text[0],
+                       web_url=web_url,
+                       sid=eolid)
         else:
-            raise Exception("Has_images{}; Has_text={}; is_species={}".format(has_images, has_text, is_species))
+            raise Exception("has_names={}; Has_images={}; Has_text={}; is_species={}".format(
+                has_names, has_images, has_text, is_species))
 
     def __repr__(self):
         return "{s} ({c})".format(c=self.common_name, s=self.scientific_name)
 
 
 class PlanigaleConsole(object):
-    def __init__(self, data, total_questions=3, num_hints=0):
-        self.game = PlanigaleGame(data, total_questions=3, num_hints=0)
+    def __init__(self, species_data, total_questions=3, num_hints=0):
+        self.species_data = copy.deepcopy(species_data)
+        self.game = PlanigaleGame(species_data, total_questions=total_questions, num_hints=0)
 
     def play(self):
         for question_num, question in enumerate(self.game.questions, start=1):
@@ -338,7 +393,7 @@ class PlanigaleConsole(object):
         self.display_final_score()
 
     def display_break(self, question_num):
-        if (question_num == self.game.total_questions):
+        if (not self.game.next_question()):
             input("\nPress enter to see your summary!")
         else:
             input("\nPress enter to continue to the next question!")
@@ -347,14 +402,16 @@ class PlanigaleConsole(object):
         os.system('clear')
         print("Question {}.".format(question_num))
         try:
-            response = urlopen(question.picture)
+            picture = self.species_data[question.answer].picture
+            response = urlopen(picture)
             img = Image.open(BytesIO(response.read()))
             img.show()
         except Exception as ex:
             print(ex)
 
         for choice_num, species in enumerate(question.species, start = 1):
-            print("{}. {}".format(choice_num, species.scientific_name))
+            scientific_name = self.species_data[species].scientific_name
+            print("{}. {}".format(choice_num, scientific_name))
 
     def get_guess(self, question):
         guess = input("\nWhat species is in this picture? Enter a choice between 1 and {}: ".format(len(question.species)))
@@ -368,12 +425,14 @@ class PlanigaleConsole(object):
         return guess_species
 
     def check_guess(self, question, guess_species, hints_used=0):
-        if self.game.score_question(question, guess_species, hints=hints_used):
+        answer = self.species_data[question.answer]
+        if self.game.score_question(guess_species, hints=hints_used):
             print("\nYou guessed correctly! Your score is {}.".format(self.game.score))
         else:
-            print("\nYou guessed incorrectly! The correct answer was {}.".format(question.answer))
+            print("\nYou guessed incorrectly! The correct answer was {}.".format(answer))
 
-        print("\nSpecies description: {}".format(question.text))
+
+        print("\nSpecies description: {}".format(answer.text))
 
 
     def display_final_score(self):
@@ -384,13 +443,13 @@ class PlanigaleConsole(object):
         for question_num, question in enumerate(self.game.questions,start=1):
             print("\n\nQuestion {}.".format(question_num))
             for species_num, species in enumerate(question.species,start=1):
-                print("{}. {}".format(species_num, species))
+                print("{}. {}".format(species_num, self.species_data[species]))
             print("\nYour answer was {}, which was {}.".format(
-                question.guess, 'Correct' if question.correct else 'Incorrect'))
-            print("\nAnswer was {}.".format(question.answer))
+                self.species_data[question.guess], 'Correct' if question.correct else 'Incorrect'))
+            print("\nAnswer was {}.".format(self.species_data[question.answer]))
 
 
 if __name__ == '__main__':
-    data = Planigale.load_species_from_json()
-    console = PlanigaleConsole(data)
-    console.play()
+    sid_list, species_data = Planigale.load_species_from_json(num_species=500)
+    console = PlanigaleConsole(species_data)
+    # console.play()

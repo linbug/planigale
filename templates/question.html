@@ -18,7 +18,7 @@
 
           <div class=forminputs id=question>
             <div class=questionbox>
-              <img class=questionpic src={{question.picture}}>
+              <img class=questionpic src={{species_data[question.answer].picture}}>
 
             </div>
 
@@ -28,7 +28,7 @@
                 <div class=inputrow>
                   <input type="radio" id="choice{{loop.index}}" name="choice" value="{{loop.index0}}" {% if loop.index0 == 0 %}checked="checked"{% endif %}>
                   <label for="choice{{loop.index}}">
-                    {{macros.italicise_names(species, hint=hint)}}
+                    {{macros.italicise_names(species_data[species], hint=hint)}}
                   </label>
                 </div>
                 <br>
