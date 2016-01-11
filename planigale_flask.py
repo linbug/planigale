@@ -60,18 +60,29 @@ if app.debug != True:
 def set_game(game):
     app.logger.debug("Setting game in redis w/ SID ({}).".format(g._sid))
     app.logger.debug("{}".format(game))
-    timeout = 60 * 15 # timeout in seconds
-
     if game is not None:
-        g._redis.set(name=g._sid, value=game.to_json(), ex=timeout)
+        session['game'] = game.to_json()
+
+    app.logger.debug("Session keys:{}".format(session.keys()))
+
+    # commenting out redis code for server side sessions
+    # timeout = 60 * 15 # timeout in seconds
+
+    # if game is not None:
+    #     g._redis.set(name=g._sid, value=game.to_json(), ex=timeout)
 
 
 def get_game():
     app.logger.debug("Getting game in redis w/ SID ({}).".format(g._sid))
-    json_text = g._redis.get(g._sid)
     game = None
-    if json_text is not None:
-        game = PlanigaleGame.from_json(json_text.decode("utf-8"))
+    if 'game' in session:
+        json_text = session['game']
+        game = PlanigaleGame.from_json(json_text)
+    # Redis server side session code
+    # json_text = g._redis.get(g._sid)
+    # game = None
+    # if json_text is not None:
+    #     game = PlanigaleGame.from_json(json_text.decode("utf-8"))
 
     app.logger.debug("Game: {}".format(game))
 
@@ -271,6 +282,7 @@ def answer():
 
 @app.route('/next', methods=['POST'])
 def next():
+    app.logger.debug('Starting next()..')
     # Get the game and re-route if not set
     game = g._game
     if game is None:
