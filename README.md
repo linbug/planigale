@@ -11,13 +11,13 @@ Data for Planigale were taken from the [Encyclopedia of Life](http://eol.org/), 
 Many cute! Much fun!
 
 ------------------------------------------------
-##Command line version
+## Command line version
 
 Planigale was originally built for the command line. If you want to play, planigale works from [version 1.0](https://github.com/linbug/planigale/releases/tag/48cda76), but the latest version also works on command line.
 
 ![alt tag](https://raw.githubusercontent.com/linbug/linbug.github.io/master/_downloads/terminal_planigale.png)
 
-###Dependencies
+### Dependencies
 
 - Python 3
 - Install the following non built-in libraries using pip:
@@ -26,7 +26,7 @@ Planigale was originally built for the command line. If you want to play, planig
   
   You can install library dependencies using `pip install -r requirements.txt` (this will also install dependencies for web planiagle as well)
 
-###Usage
+### Usage
 
 - clone this repo to your computer
 - `cd` to the planigale directory in the terminal
@@ -34,13 +34,13 @@ Planigale was originally built for the command line. If you want to play, planig
 
 ------------------------------------------------
 
-##[Web app](http://planigale.dvndrsn.com/)
+## [Web app](http://planigale.dvndrsn.com/)
 
 ![alt tag](http://s24.postimg.org/b2cw4uzo5/Screen_Shot_2016_01_08_at_20_30_07.png)
 
 Planigale was a full-stack learning experience. We refactored the command line game into a [Flask](http://flask.pocoo.org/) app, designed the front-end from scratch, hosted it on [Heroku](https://www.heroku.com/) and stored the gameplay state in [Redis](http://redis.io/).
 
-###Dependancies
+### Dependancies
 
 - Python 3.5.0
 - In addition to the libraries used for the command line version above, install the following non-built-in libraries using pip:
@@ -48,14 +48,14 @@ Planigale was a full-stack learning experience. We refactored the command line g
     - `redis` is a Python interface to the popular key-value store which is super fast and easy to set up. We used this to implement server-side sessions.
     - `gunicorn` is a WSGI container which is required for hosting this app in a production environment.
 
-###Usage
+### Usage
 
 Before running planigale on a local (or remote) host, you must configure two environment variables. Instructions to set environment variables vary based upon your OS and platform.
 
 - `REDIS_URL` must be set to the URL of the Redis instance which is being used for hosting the app. We used a free [Redis to Go](https://devcenter.heroku.com/articles/redistogo) instance from heroku.
 - `PLANIGALE_KEY` must be set to a random value to ensure consistent client side sessions for flask [here](http://flask.pocoo.org/docs/0.10/quickstart/#sessions) for more info).
 
-####Local host
+#### Local host
 
 Follow the below instructions to run the planigale web application locally.
 
@@ -67,7 +67,7 @@ Follow the below instructions to run the planigale web application locally.
   - `gunicorn planigale_flask:app --log-file=-` for gunicorn server with WSGI logs displayed to console.
 - open a web browser. planigale should be hosted at http://localhost:5000/
 
-####Remote Host
+#### Remote Host
 
 Heroku was used for hosting this flask app. There are some good instructions for getting started with Python on Heroku [here](https://devcenter.heroku.com/articles/getting-started-with-python-o). This repository already contains the required files for hosting this on heroku.
 
