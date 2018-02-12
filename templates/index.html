@@ -1,69 +1,86 @@
-
 <!DOCTYPE html>
-
 {%include 'head.html' %}
-
 <body>
-  <article>
-     {% include 'header.html' %}
-     {% include 'swag.html' %}
-     {% import 'macro.html' as macros %}
+    <article>
+        {% include 'header.html' %}
+        {% include 'swag.html' %}
+        {% import 'macro.html' as macros %}
+        <section class=container>
+            <div class=content>
+                <div>
+                    <h2> Planigale challenges you to match the picture of the species with its Latin name.</h2>
+                    <div class=newgame>
+                        <h2 class=newgameheader> Play a game of Planigale!</h2>
+                        <form id="newgame" action="/newgame" method="post">
+                            <div class=forminputs>
+                                <div class=numquestions>
+                                    <h3> Number of questions </h3>
+                                    <div class="inputbox">
+                                        <select name="num_questions">
+                                            {% for option in range(1,11) %}
 
-     <section class=container>
-      <div class=content>
-        <div>
+                                            <option value ="{{option}}" {% if option == 3 %}selected="selected"{% endif %}>{{option}}</option>
 
-          <h2> Planigale challenges you to match the picture of the species with its Latin name.</h2>
-          <div class=newgame>
-            <h2 class=newgameheader> Play a game of Planigale!
-            </h2>
-            <form action="/newgame" method="post">
-                <div class=forminputs>
-                  <div class=numquestions>
-                    <h3> Number of questions </h3>
-                        <div class="inputbox">
-                            <select name="num_questions">
-                                {% for option in range(1,11) %}
+                                            {% endfor %}
+                                        </select>
+                                        <!-- <input type="text" name="num_questions" class= "questionform" value="3" position="center"> -->
+                                    </div>
+                                </div>
+                                <div class=difficulty>
+                                    <h3>
+                                        Difficulty
+                                    </h3>
+                                    <div class = inputrow>
+                                        <input type="radio" id="easy" name="difficulty" value="easy" checked="checked">
+                                        <label for="easy"><p class=forminput>Easy (unlimited hints!)</p></label>
+                                    </div>
+                                    <br>
+                                    <div class = inputrow>
+                                        <input type="radio" id="medium" name="difficulty" value="medium">
+                                        <label for="medium"><p class=forminput>Medium (limited hints!)</p></label>
+                                    </div>
+                                    <br>
+                                    <div class = inputrow>
+                                        <input type="radio" id="hard" name="difficulty" value="hard">
+                                        <label for="hard"><p class=forminput>Hard (hints be damned!)</p></label>
+                                    </div>
+                                    <br>
+                                </div>
 
-                                <option value ="{{option}}" {% if option == 3 %}selected="selected"{% endif %}>{{option}}</option>
+                            </div>
 
-                                {% endfor %}
-                            </select>
-                    <!-- <input type="text" name="num_questions" class= "questionform" value="3" position="center"> -->
-                        </div>
+                            <div class=buttoncontainer>
+
+                                <button type="submit" value="Play Planigale">Go!</button>
+                            </div>
+                        </form>
+                        <script>
+                            var form = document.getElementById('newgame');
+                            // Adds a listener for the "submit" event.
+                            form.addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                setTimeout(submitForm, 1000);
+
+                                var formSubmitted = false;
+                                function submitForm() {
+                                    if (!formSubmitted) {
+                                    formSubmitted = true;
+                                    form.submit();
+                                    }
+                                }
+
+                                var selectedDifficulty = document.querySelector('input[name="difficulty"]:checked').value;
+                                ga('set', 'dimension1', selectedDifficulty);
+
+                                ga('send', 'event', 'Game', 'Submit', 'New Game', {
+                                    hitCallback: submitForm
+                                });
+                            });
+                        </script>
+                    </div>
                 </div>
-                <div class=difficulty>
-                    <h3>
-                      Difficulty
-                  </h3>
-                  <div class = inputrow>
-                      <input type="radio" id="easy" name="difficulty" value="easy" checked="checked">
-                      <label for="easy"><p class=forminput>Easy (unlimited hints!)</p></label>
-                  </div>
-                  <br>
-                  <div class = inputrow>
-                      <input type="radio" id="medium" name="difficulty" value="medium">
-                      <label for="medium"><p class=forminput>Medium (limited hints!)</p></label>
-                  </div>
-                  <br>
-                  <div class = inputrow>
-                      <input type="radio" id="hard" name="difficulty" value="hard">
-                      <label for="hard"><p class=forminput>Hard (hints be damned!)</p></label>
-                  </div>
-                  <br>
-              </div>
-
-          </div>
-
-      <div class=buttoncontainer>
-
-          <button type="submit" value="Play Planigale">Go!</button>
-      </div>
-</form>
-
-  </div>
-</section>
-
-{% include 'footer.html' %}
-</article>
+            </div>
+        </section>
+        {% include 'footer.html' %}
+    </article>
 </body>

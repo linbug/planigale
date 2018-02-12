@@ -1,70 +1,63 @@
 <!DOCTYPE html>
-
 {%include 'head.html' %}
-
 <body>
     <article>
-
         {% include 'header.html' %}
         {% import 'macro.html' as macros %}
-
         <section class="container">
             <div class=content>
                 <div class = something>
-            <div class="sum-full">
-              <div class="sum-full-lead">
-                <h2>Summary</h2>
-                <p>{{game.score}} of {{game.total_questions}} questions correct!</p>
+                    <div class="sum-full">
+                        <div class="sum-full-lead">
+                            <h2>Summary</h2>
+                            <p>{{game.score}} of {{game.total_questions}} questions correct!</p>
+                        </div>
+                    </div>
+
+                    {% for q in questions %}
+                        <div class="sum-question">
+                            <div class="sum-quest-lead">
+                                <h3>Question {{loop.index}}.</h3>
+                            </div>
+                            {% for s in q.species %}
+                                <div class="sum-quest-ans">
+                                    <div class="{% if s == q.answer %} answer {% endif %}row">
+                                    <div class="thumb cell">
+                                        <img src={{species_data[s].thumb}}>
+                                    </div>
+                                    <div class="choice-text cell">
+                                        <a href="{{ species_data[s].web_url }}" target="_blank">{{ macros.italicise_names(species_data[s])}}</a>
+                                    </div>
+                                    <div class="verify">
+                                        {% if s == q.guess %}
+                                            {% if q.guess == q.answer %}
+                                                <i class = "fa fa-check fa-2x" background= green ></i>
+                                            {% else %}
+                                                <i class = "fa fa-times fa-2x"></i>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-
-        {% for q in questions %}
-        <div class="sum-question">
-          <div class="sum-quest-lead">
-            <h3>Question {{loop.index}}.</h3>
-        </div>
-        {% for s in q.species %}
-        <div class="sum-quest-ans">
-            <div class="{% if s == q.answer %} answer {% endif %}row">
-              <div class="thumb cell">
-                <img src={{species_data[s].thumb}}>
-              </div>
-              <div class="choice-text cell">
-                <a href="{{ species_data[s].web_url }}" target="_blank">{{ macros.italicise_names(species_data[s])}}</a>
-              </div>
-              <div class="verify">
-
-                {% if s == q.guess %}
-                    {% if q.guess == q.answer %}
-
-                <i class = "fa fa-check fa-2x" background= green ></i>
-
-
-                {% else %}
-                <i class = "fa fa-times fa-2x"></i>
-                {% endif %}
-                {% endif %}
-              </div>
-            </div>
-        </div>
-
-
-
-
-    {% endfor %}
-
-
-            </div>
-        {% endfor %}
-
-
-        </div>
-
-    </div>
-
         </section>
-
     </article>
     {% include 'footer.html' %}
+    <script>
+        var totalScore = '{{game.score}}';
+        ga('set', 'dimension2', totalScore);
 
+        var totalQuestions = '{{game.total_questions}}'
+        ga('set', 'dimension3', totalQuestions);
+
+        ga('send', 'event', {
+            'eventCategory': 'Game',
+            'eventAction': 'Complete',
+            'eventLabel': 'Finshed Game'
+        });
+    </script>
 </body>

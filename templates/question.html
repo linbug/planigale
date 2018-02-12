@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 {%include 'head.html' %}
 <script src="hrs.js"></script>
-
 <body>
   <article>
     {% include 'header.html' %}
@@ -9,69 +8,69 @@
     <section class=container>
       <div class=content>
         <h2 class=question> Question {{ question_num }} of {{ total_questions }}</h2>
-
-
-        <p>  Which species is in the picture?
-        </p>
-
+        <p>  Which species is in the picture?</p>
         <div class=questioncontainer>
-
           <div class=forminputs id=question>
             <div class=questionbox>
               <img class=questionpic src={{species_data[question.answer].picture}}>
-
             </div>
-
             <div class=questionbox>
-              <form  action="/answer" method="post">
+              <form id="question" action="/answer" method="post">
                 {% for species in question.species %}
-                <div class=inputrow>
-                  <input type="radio" id="choice{{loop.index}}" name="choice" value="{{loop.index0}}" {% if loop.index0 == 0 %}checked="checked"{% endif %}>
-                  <label for="choice{{loop.index}}">
-                    {{macros.italicise_names(species_data[species], hint=hint)}}
-                  </label>
-                </div>
-                <br>
-                    {% endfor %}
-
+                  <div class=inputrow>
+                    <input type="radio" id="choice{{loop.index}}" name="choice" value="{{loop.index0}}" {% if loop.index0 == 0 %}checked="checked"{% endif %}>
+                    <label for="choice{{loop.index}}">
+                      {{macros.italicise_names(species_data[species], hint=hint)}}
+                    </label>
+                  </div>
+                  <br>
+                {% endfor %}
                 <div class=buttoncontainer>
-
                   <button name = "submit" type="submit" value="0" >Submit!</button>
                 </div>
                 <br>
-                 {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                <p>{{ message }}</p>
-                {% endfor %}
-                {% endif %}
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <p>{{ message }}</p>
+                    {% endfor %}
+                  {% endif %}
                 {% endwith %}
               </form>
+              <script>
+                var form = document.getElementById('question');
+                // Adds a listener for the "submit" event.
+                form.addEventListener('submit', function(event) {
+                  event.preventDefault();
+                  setTimeout(submitForm, 1000);
 
+                  var formSubmitted = false;
+                  function submitForm() {
+                    if (!formSubmitted) {
+                      formSubmitted = true;
+                      form.submit();
+                    }
+                  }
 
-
+                  ga('send', 'event', 'New Game', 'submit', {
+                    hitCallback: submitForm
+                  });
+                });
+              </script>
             </div>
-
           </div>
-
-
-
         </div>
-
-
         <p> You have {{hints_remaining}} hints remaining </p>
-            {% if hints_remaining>0 %}
-            <form  method="post" action = "/question#Buttons">
-                <div class=buttoncontainer>
-                    <button type="submit" name = "hint" value = True > Give me a hint! </button>
-                </div>
-                </form>
-            {% endif %}
-
-
-
+        {% if hints_remaining>0 %}
+          <form  method="post" action = "/question#Buttons">
+            <div class=buttoncontainer>
+                <button type="submit" name = "hint" value = True > Give me a hint! </button>
+            </div>
+          </form>
+        {% endif %}
+        </div>
+      </div>
     </section>
-
     {% include 'footer.html' %}
   </article>
 </body>
