@@ -26,7 +26,7 @@
                   <br>
                 {% endfor %}
                 <div class=buttoncontainer>
-                  <button name = "submit" type="submit" value="0" >Submit!</button>
+                  <button type="submit" value="0" >Submit!</button>
                 </div>
                 <br>
                 {% with messages = get_flashed_messages() %}
@@ -39,7 +39,6 @@
               </form>
               <script>
                 var form = document.getElementById('question-form');
-                // Adds a listener for the "submit" event.
                 form.addEventListener('submit', function(event) {
                   event.preventDefault();
                   setTimeout(submitForm, 1000);
