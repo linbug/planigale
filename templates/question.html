@@ -15,7 +15,7 @@
               <img class=questionpic src={{species_data[question.answer].picture}}>
             </div>
             <div class=questionbox>
-              <form id="question" action="/answer" method="post">
+              <form id="question-form" action="/answer" method="post">
                 {% for species in question.species %}
                   <div class=inputrow>
                     <input type="radio" id="choice{{loop.index}}" name="choice" value="{{loop.index0}}" {% if loop.index0 == 0 %}checked="checked"{% endif %}>
@@ -38,7 +38,7 @@
                 {% endwith %}
               </form>
               <script>
-                var form = document.getElementById('question');
+                var form = document.getElementById('question-form');
                 // Adds a listener for the "submit" event.
                 form.addEventListener('submit', function(event) {
                   event.preventDefault();
